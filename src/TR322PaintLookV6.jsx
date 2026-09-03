@@ -1020,10 +1020,35 @@ function BodySlider({ val, min, max, onChange }) {
 }
 
 function TR322VideoAudioPage({ settings, onChange }) {
+  const [licenseKey, setLicenseKey] = useState("");
+  const [activeLicenseKey, setActiveLicenseKey] = useState("");
+  const [licenseActive, setLicenseActive] = useState(false);
+  const [licenseError, setLicenseError] = useState("");
+  const [unbindOpen, setUnbindOpen] = useState(false);
   const selectStyle = { width: "100%", maxWidth: "none", background: "#202328", border: `1.5px solid ${T.line2}`, borderRadius: 4, padding: "5px 10px" };
   const cardStyle = { marginBottom: 6 };
   const cardContentStyle = { padding: "10px 12px" };
   const fieldStyle = { minHeight: 64 };
+  const activateLicense = (event) => {
+    event.preventDefault();
+    const normalizedKey = licenseKey.trim();
+    if (normalizedKey.length < 8) {
+      setLicenseError("Enter a valid license key.");
+      return;
+    }
+    setActiveLicenseKey(normalizedKey);
+    setLicenseActive(true);
+    setLicenseError("");
+  };
+  const unbindLicense = () => {
+    setLicenseActive(false);
+    setLicenseKey("");
+    setActiveLicenseKey("");
+    setUnbindOpen(false);
+    onChange("videoOutRes", "1080p/60");
+    onChange("streamRes", "1920x1080");
+  };
+  const maskedLicenseKey = activeLicenseKey ? `••••-••••-${activeLicenseKey.slice(-4).toUpperCase()}` : "";
 
   return (
     <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ width: "100%", height: "100%", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
@@ -1041,10 +1066,44 @@ function TR322VideoAudioPage({ settings, onChange }) {
         </div>
       </ConfigCard>
 
+      <ConfigCard className="tr322-card tr322-license-card" style={cardStyle} contentStyle={cardContentStyle}>
+        <form onSubmit={activateLicense} style={{ minHeight: 54, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18 }}>
+          <div style={{ minWidth: 230 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#fff", fontSize: 13.5, fontWeight: 650 }}>
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: licenseActive ? "#49c97a" : T.faint, boxShadow: licenseActive ? "0 0 8px rgba(73,201,122,.55)" : "none" }} />
+              High Resolution License
+            </div>
+            <div style={{ marginTop: 4, color: licenseActive ? "#72d99a" : T.faint, fontSize: 11.5 }}>
+              {licenseActive ? "Activated · 4K output enabled" : "Unlock 2160p/30 video and 3840x2160 streaming"}
+            </div>
+          </div>
+          {licenseActive ? (
+            <>
+              <div style={{ flex: 1, minWidth: 180, maxWidth: 430, padding: "8px 11px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.dim, fontFamily: fMono, fontSize: 12.5 }}>
+                {maskedLicenseKey}
+              </div>
+              <button type="button" onClick={() => setUnbindOpen(true)} style={{ minWidth: 128, padding: "8px 14px", border: "1px solid #a94b50", borderRadius: 4, background: "rgba(169,75,80,.12)", color: "#ef9a9e", fontFamily: fUI, fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>
+                Unbind License
+              </button>
+            </>
+          ) : (
+            <>
+              <div style={{ flex: 1, minWidth: 180, maxWidth: 430 }}>
+                <input aria-label="License Key" value={licenseKey} onChange={(event) => { setLicenseKey(event.target.value); setLicenseError(""); }} placeholder="Enter license key" autoComplete="off" style={{ width: "100%", boxSizing: "border-box", padding: "8px 11px", border: `1.5px solid ${licenseError ? "#d76066" : T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fMono, fontSize: 12.5 }} />
+                {licenseError && <div role="alert" style={{ marginTop: 3, color: "#ef8388", fontSize: 10.5 }}>{licenseError}</div>}
+              </div>
+              <button type="submit" style={{ minWidth: 128, padding: "8px 14px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontSize: 12.5, fontWeight: 650, cursor: "pointer" }}>
+                Activate
+              </button>
+            </>
+          )}
+        </form>
+      </ConfigCard>
+
       <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
         <div className="tr322-output-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="Video Output Resolution" style={{ ...fieldStyle, gridColumn: "span 2" }}>
-            <Select val={settings.videoOutRes} options={["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={{ ...selectStyle, maxWidth: 320 }} />
+            <Select val={settings.videoOutRes} options={licenseActive ? ["2160p/30", "1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"] : ["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={{ ...selectStyle, maxWidth: 320 }} />
           </FormField>
           <FormField label="HDMI Output Format" style={fieldStyle}>
             <Select val={settings.hdmiOutputFormat} options={["YUV444"]} onChange={(value) => onChange("hdmiOutputFormat", value)} style={selectStyle} />
@@ -1063,7 +1122,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
       <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
         <div className="tr322-stream-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="Stream Video Output" style={fieldStyle}>
-            <Select val={settings.streamRes} options={["1920x1080", "1280x720", "640x360"]} onChange={(value) => onChange("streamRes", value)} style={selectStyle} />
+            <Select val={settings.streamRes} options={licenseActive ? ["3840x2160", "1920x1080", "1280x720", "640x360"] : ["1920x1080", "1280x720", "640x360"]} onChange={(value) => onChange("streamRes", value)} style={selectStyle} />
           </FormField>
           <FormField label="Bitrate" style={fieldStyle}>
             <Select val={settings.streamBitrate} options={["Auto", "2Mbps", "4Mbps", "8Mbps", "16Mbps"]} onChange={(value) => onChange("streamBitrate", value)} style={selectStyle} />
@@ -1121,6 +1180,21 @@ function TR322VideoAudioPage({ settings, onChange }) {
           <div aria-hidden="true" />
         </div>
       </ConfigCard>
+
+      {unbindOpen && (
+        <div role="dialog" aria-modal="true" aria-labelledby="unbind-license-title" style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.68)", backdropFilter: "blur(3px)" }}>
+          <div style={{ width: "min(430px, 100%)", padding: 22, border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, boxShadow: "0 22px 60px rgba(0,0,0,.55)" }}>
+            <div id="unbind-license-title" style={{ color: "#fff", fontSize: 17, fontWeight: 700 }}>Unbind high resolution license?</div>
+            <div style={{ marginTop: 10, color: T.dim, fontSize: 13, lineHeight: 1.55 }}>
+              4K output will be disabled. Video output will return to 1080p/60 and stream output to 1920x1080. The license can then be activated on another device.
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+              <button type="button" onClick={() => setUnbindOpen(false)} style={{ padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.text, fontFamily: fUI, cursor: "pointer" }}>Cancel</button>
+              <button type="button" onClick={unbindLicense} style={{ padding: "8px 16px", border: "1px solid #b55156", borderRadius: 4, background: "#a44348", color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>Unbind License</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -3551,6 +3625,17 @@ export default function App() {
         }
         #aver-video-audio-wrapper .aver-vertical-radio > span:last-child {
           font-size: 12.5px !important;
+        }
+        @media (max-width: 768px) {
+          #aver-video-audio-wrapper .tr322-license-card form {
+            align-items: stretch !important;
+            flex-direction: column !important;
+          }
+          #aver-video-audio-wrapper .tr322-license-card form > * {
+            width: 100% !important;
+            max-width: none !important;
+            box-sizing: border-box !important;
+          }
         }
 
         /* 縮放 125% 與低高度螢幕適配滾動 */
