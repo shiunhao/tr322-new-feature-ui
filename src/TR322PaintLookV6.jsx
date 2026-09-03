@@ -1026,7 +1026,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
   const fieldStyle = { minHeight: 64 };
 
   return (
-    <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ width: "min(1320px, 100%)", height: "100%", margin: "0 auto", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
+    <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ width: "100%", height: "100%", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
       <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
         <div className="tr322-primary-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="Power Frequency" style={fieldStyle}>
@@ -3528,6 +3528,12 @@ export default function App() {
         }
         #aver-video-audio-wrapper .tr322-card > .aver-config-card-content {
           padding: 5px 10px !important;
+        }
+        #aver-video-audio-wrapper .tr322-card > .aver-config-card-content > div {
+          width: 100%;
+          max-width: 1300px;
+          margin-left: auto;
+          margin-right: auto;
         }
         #aver-video-audio-wrapper .aver-form-field {
           min-height: 64px !important;
