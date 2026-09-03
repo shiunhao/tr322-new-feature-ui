@@ -824,16 +824,17 @@ function summarize(d) {
 /**
  * 設置面板卡片 (Config Card)
  */
-function ConfigCard({ title, children }) {
+function ConfigCard({ title, children, className, style, contentStyle }) {
   return (
-    <div style={{
+    <div className={className} style={{
       background: T.panel,
       border: `1px solid ${T.line}`,
       borderRadius: 10,
       overflow: "hidden",
       marginBottom: 10,
       width: "100%",
-      boxSizing: "border-box"
+      boxSizing: "border-box",
+      ...style
     }}>
       {/* 標題欄 */}
       <div style={{
@@ -850,7 +851,8 @@ function ConfigCard({ title, children }) {
       {/* 內容區 */}
       <div style={{
         padding: "16px 20px",
-        fontFamily: fUI
+        fontFamily: fUI,
+        ...contentStyle
       }}>
         {children}
       </div>
@@ -863,7 +865,7 @@ function ConfigCard({ title, children }) {
  */
 function VerticalRadio({ label, checked, onChange, disabled }) {
   return (
-    <label style={{
+    <label className="aver-vertical-radio" style={{
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -948,7 +950,7 @@ function Select({ val, options, onChange, disabled, style }) {
  */
 function FormField({ label, children, rightLabel, style }) {
   return (
-    <div style={{
+    <div className="aver-form-field" style={{
       border: `1.5px solid ${T.line}`,
       borderRadius: 4,
       background: "#08090a", // 完全黑色背景，與 AVer 設計稿保持一致
@@ -960,7 +962,7 @@ function FormField({ label, children, rightLabel, style }) {
       ...style
     }}>
       {/* 小 Header 標籤 */}
-      <div style={{
+      <div className="aver-form-field-header" style={{
         background: "#22252a", // 灰色小 Header 背景
         padding: "4px 12px",
         fontSize: 14,
@@ -976,7 +978,7 @@ function FormField({ label, children, rightLabel, style }) {
         {rightLabel !== undefined && <span style={{ color: T.blue, fontFamily: fMono }}>{rightLabel}</span>}
       </div>
       {/* 內容 Control 區域 */}
-      <div style={{
+      <div className="aver-form-field-content" style={{
         padding: "8px 12px",
         flex: 1,
         display: "flex",
@@ -1018,124 +1020,95 @@ function BodySlider({ val, min, max, onChange }) {
 }
 
 function TR322VideoAudioPage({ settings, onChange }) {
-  const fieldSelectStyle = {
-    width: "100%",
-    maxWidth: "none",
-    background: "#202328",
-    border: `1.5px solid ${T.line2}`,
-    borderRadius: 4,
-    padding: "6px 12px"
-  };
-  const streamDisabled = settings.videoMode === "USB Only";
-  const encodingDisabled = settings.videoMode === "USB + Streaming" || streamDisabled;
-  const modes = [
-    { id: "Stream Only", label: "Stream Only" },
-    { id: "USB Only", label: "USB Only" },
-    { id: "USB + Streaming", label: "USB + Streaming" },
-    { id: "NDI", label: "NDI", disabled: true }
-  ];
+  const selectStyle = { width: "100%", maxWidth: "none", background: "#202328", border: `1.5px solid ${T.line2}`, borderRadius: 4, padding: "5px 10px" };
+  const cardStyle = { marginBottom: 8 };
+  const cardContentStyle = { padding: "10px 12px" };
+  const fieldStyle = { minHeight: 64 };
 
   return (
-    <div id="aver-video-audio-wrapper" style={{ width: "min(1180px, 100%)", height: "100%", margin: "0 auto", overflowY: "auto", padding: "4px 8px 24px 0", boxSizing: "border-box" }}>
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 20, marginBottom: 20 }}>
-        <div>
-          <div style={{ color: T.blue, fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: "uppercase" }}>TR322 configuration</div>
-          <h1 style={{ margin: "6px 0 0", color: T.text, fontSize: 25, lineHeight: 1.2, fontWeight: 650 }}>Video &amp; Audio</h1>
-          <p style={{ margin: "7px 0 0", color: T.dim, fontSize: 13, lineHeight: 1.5 }}>Configure streaming, USB video output, and audio behavior.</p>
-        </div>
-        <div style={{ padding: "6px 10px", borderRadius: 999, border: `1px solid rgba(30,155,240,0.35)`, background: "rgba(30,155,240,0.08)", color: T.blue, fontSize: 11.5, fontWeight: 650, whiteSpace: "nowrap" }}>Video &amp; Audio prototype</div>
-      </div>
-
-      <ConfigCard title="Video Mode">
-        <div className="tr322-mode-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 }}>
-          {modes.map((mode) => {
-            const selected = settings.videoMode === mode.id;
-            return (
-              <button
-                key={mode.id}
-                id={`tr322-video-mode-${mode.id.toLowerCase().replaceAll(" ", "-").replace("+", "plus")}`}
-                type="button"
-                disabled={mode.disabled}
-                aria-pressed={selected}
-                onClick={() => onChange("videoMode", mode.id)}
-                style={{ minHeight: 76, padding: "12px 10px", borderRadius: 7, border: `1px solid ${selected ? T.blue : T.line2}`, background: selected ? "rgba(30,155,240,0.13)" : "#111317", color: selected ? "#fff" : mode.disabled ? T.faint : T.dim, fontFamily: fUI, fontSize: 13, fontWeight: selected ? 650 : 500, cursor: mode.disabled ? "not-allowed" : "pointer", opacity: mode.disabled ? 0.42 : 1, boxShadow: selected ? "inset 0 0 0 1px rgba(30,155,240,0.22), 0 8px 24px rgba(0,0,0,0.16)" : "none", transition: "border-color .18s ease, background .18s ease, color .18s ease, transform .18s ease" }}
-              >
-                <span aria-hidden="true" style={{ width: 16, height: 16, margin: "0 auto 9px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", border: `2px solid ${selected ? "#fff" : T.faint}`, boxSizing: "border-box" }}>
-                  {selected && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff" }} />}
-                </span>
-                {mode.label}
-              </button>
-            );
-          })}
+    <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ width: "min(1320px, 100%)", height: "100%", margin: "0 auto", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
+      <ConfigCard title="Video Output" className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
+        <div className="tr322-video-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
+          <FormField label="Power Frequency" style={fieldStyle}>
+            <Select val={settings.powerFreq} options={["50Hz", "59.94Hz", "60Hz"]} onChange={(value) => onChange("powerFreq", value)} style={selectStyle} />
+          </FormField>
+          <FormField label="Priority Mode" style={fieldStyle}>
+            <Select val={settings.priorityMode} options={["2K60"]} onChange={(value) => onChange("priorityMode", value)} style={selectStyle} />
+          </FormField>
+          <FormField label="PIP/PBP Mode" style={fieldStyle}>
+            <Select val={settings.pipPbpMode} options={["PIP(PTZ/Wide) Small"]} onChange={(value) => onChange("pipPbpMode", value)} style={selectStyle} />
+          </FormField>
+          <FormField label="Video Output Resolution" style={fieldStyle}>
+            <Select val={settings.videoOutRes} options={["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={selectStyle} />
+          </FormField>
+          <FormField label="HDMI Output Format" style={fieldStyle}>
+            <Select val={settings.hdmiOutputFormat} options={["YUV444"]} onChange={(value) => onChange("hdmiOutputFormat", value)} style={selectStyle} />
+          </FormField>
+          <FormField label="Theme Mode" style={fieldStyle}>
+            <Select val={settings.themeMode} options={["IP"]} onChange={(value) => onChange("themeMode", value)} style={selectStyle} />
+          </FormField>
         </div>
       </ConfigCard>
 
-      <ConfigCard title="Stream Video Output">
-        <div className="tr322-settings-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
-          <FormField label="Stream Video Output">
-            <Select val={settings.streamRes} options={["1920x1080", "1280x720", "640x360"]} disabled={streamDisabled} onChange={(value) => onChange("streamRes", value)} style={fieldSelectStyle} />
+      <ConfigCard title="Stream Video Output" className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
+        <div className="tr322-stream-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 8 }}>
+          <FormField label="Stream Video Output" style={fieldStyle}>
+            <Select val={settings.streamRes} options={["1920x1080", "1280x720", "640x360"]} onChange={(value) => onChange("streamRes", value)} style={selectStyle} />
           </FormField>
-          <FormField label="Bitrate">
-            <Select val={settings.streamBitrate} options={["1Mbps", "2Mbps", "4Mbps", "6Mbps", "8Mbps", "12Mbps", "16Mbps"]} disabled={streamDisabled} onChange={(value) => onChange("streamBitrate", value)} style={fieldSelectStyle} />
+          <FormField label="Bitrate" style={fieldStyle}>
+            <Select val={settings.streamBitrate} options={["Auto", "2Mbps", "4Mbps", "8Mbps", "16Mbps"]} onChange={(value) => onChange("streamBitrate", value)} style={selectStyle} />
           </FormField>
-          <FormField label="Encoding Type">
-            <div style={{ display: "flex", gap: 24, padding: "4px 0" }}>
-              <VerticalRadio label="H.264" disabled={encodingDisabled} checked={settings.streamEncode === "H.264"} onChange={() => onChange("streamEncode", "H.264")} />
-              <VerticalRadio label="MJPEG" disabled={encodingDisabled} checked={settings.streamEncode === "MJPEG"} onChange={() => onChange("streamEncode", "MJPEG")} />
+          <FormField label="Encoding Type" style={fieldStyle}>
+            <div style={{ display: "flex", gap: 12, padding: "1px 0" }}>
+              <VerticalRadio label="H.264" checked={settings.streamEncode === "H.264"} onChange={() => onChange("streamEncode", "H.264")} />
+              <VerticalRadio label="H.265" checked={settings.streamEncode === "H.265"} onChange={() => onChange("streamEncode", "H.265")} />
             </div>
           </FormField>
-          <FormField label="Framerate">
-            <Select val={settings.streamFps} options={["60", "59.94", "50", "30", "25"]} disabled={streamDisabled} onChange={(value) => onChange("streamFps", value)} style={fieldSelectStyle} />
+          <FormField label="Framerate" style={fieldStyle}>
+            <Select val={settings.streamFps} options={["60", "59.94", "50", "30", "25"]} onChange={(value) => onChange("streamFps", value)} style={selectStyle} />
           </FormField>
-          <FormField label="I-VOP Interval (S)" rightLabel={`${settings.streamI_Vop}s`}>
-            <div style={{ width: "100%", opacity: streamDisabled ? 0.45 : 1, pointerEvents: streamDisabled ? "none" : "auto" }}>
-              <BodySlider val={settings.streamI_Vop} min={1} max={10} onChange={(value) => onChange("streamI_Vop", value)} />
+          <FormField label="I-VOP Interval (S)" rightLabel={`${settings.streamI_Vop}s`} style={fieldStyle}>
+            <BodySlider val={settings.streamI_Vop} min={0} max={10} onChange={(value) => onChange("streamI_Vop", value)} />
+          </FormField>
+          <FormField label="GOP Value" style={fieldStyle}>
+            <input aria-label="GOP Value" type="text" disabled value={settings.streamGop} style={{ width: "100%", boxSizing: "border-box", padding: "5px 10px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.faint, fontFamily: fUI, fontSize: 13, opacity: 0.55 }} />
+          </FormField>
+          <FormField label="Compatibility Encoding Mode" style={fieldStyle}>
+            <div style={{ display: "flex", gap: 12, padding: "1px 0" }}>
+              <VerticalRadio label="Off" checked={settings.streamCompat === "Off"} onChange={() => onChange("streamCompat", "Off")} />
+              <VerticalRadio label="On" checked={settings.streamCompat === "On"} onChange={() => onChange("streamCompat", "On")} />
             </div>
           </FormField>
-          <FormField label="Rate Control">
-            <div style={{ display: "flex", gap: 24, padding: "4px 0" }}>
-              <VerticalRadio label="VBR" disabled={streamDisabled} checked={settings.streamRateCtrl === "VBR"} onChange={() => onChange("streamRateCtrl", "VBR")} />
-              <VerticalRadio label="CBR" disabled={streamDisabled} checked={settings.streamRateCtrl === "CBR"} onChange={() => onChange("streamRateCtrl", "CBR")} />
+          <FormField label="Rate Control" style={fieldStyle}>
+            <div style={{ display: "flex", gap: 12, padding: "1px 0" }}>
+              <VerticalRadio label="VBR" checked={settings.streamRateCtrl === "VBR"} onChange={() => onChange("streamRateCtrl", "VBR")} />
+              <VerticalRadio label="CBR" checked={settings.streamRateCtrl === "CBR"} onChange={() => onChange("streamRateCtrl", "CBR")} />
             </div>
           </FormField>
         </div>
       </ConfigCard>
 
-      <ConfigCard title="Audio">
-        <div className="tr322-settings-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
-          <FormField label="Audio Input Type">
-            <div style={{ display: "flex", gap: 24, padding: "4px 0" }}>
+      <ConfigCard title="Audio" className="tr322-card" style={{ ...cardStyle, marginBottom: 0 }} contentStyle={cardContentStyle}>
+        <div className="tr322-audio-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
+          <FormField label="Audio Input Type" style={fieldStyle}>
+            <div style={{ display: "flex", gap: 12, padding: "1px 0" }}>
               <VerticalRadio label="Line In" checked={settings.audioInputType === "Line In"} onChange={() => onChange("audioInputType", "Line In")} />
               <VerticalRadio label="MIC In" checked={settings.audioInputType === "MIC In"} onChange={() => onChange("audioInputType", "MIC In")} />
             </div>
           </FormField>
-          <FormField label="Audio Volume" rightLabel={settings.audioVolume}>
+          <FormField label="Audio Volume" rightLabel={settings.audioVolume} style={fieldStyle}>
             <BodySlider val={settings.audioVolume} min={0} max={10} onChange={(value) => onChange("audioVolume", value)} />
           </FormField>
-          <FormField label="UAC">
-            <div style={{ display: "flex", gap: 24, padding: "4px 0" }}>
-              <VerticalRadio label="On" checked={settings.uac === "On"} onChange={() => onChange("uac", "On")} />
-              <VerticalRadio label="Off" checked={settings.uac === "Off"} onChange={() => onChange("uac", "Off")} />
-            </div>
+          <FormField label="USB Audio Enable" style={fieldStyle}>
+            <Select val={settings.usbAudioEnable} options={["Enable", "Disable"]} onChange={(value) => onChange("usbAudioEnable", value)} style={selectStyle} />
           </FormField>
-          <FormField label="Encoding Type">
-            <div style={{ display: "flex", gap: 24, padding: "4px 0" }}>
-              <VerticalRadio label="AAC" checked={settings.audioEncode === "AAC"} onChange={() => onChange("audioEncode", "AAC")} />
-              <VerticalRadio label="G.711" checked={settings.audioEncode === "G.711"} onChange={() => onChange("audioEncode", "G.711")} />
-            </div>
+          <FormField label="Encoding Type" style={fieldStyle}>
+            <VerticalRadio label="AAC" disabled checked={settings.audioEncode === "AAC"} onChange={() => {}} />
           </FormField>
-          <FormField label="Sampling Rate">
-            <Select val={settings.audioSampleRate} options={["48K"]} onChange={(value) => onChange("audioSampleRate", value)} style={fieldSelectStyle} />
+          <FormField label="Sampling Rate" style={fieldStyle}>
+            <Select val={settings.audioSampleRate} options={["48K"]} disabled onChange={() => {}} style={selectStyle} />
           </FormField>
           <div aria-hidden="true" />
-        </div>
-      </ConfigCard>
-
-      <ConfigCard title="Video Output">
-        <div style={{ maxWidth: 360 }}>
-          <FormField label="Video Output">
-            <Select val={settings.videoOutRes} options={["1080P/60", "1080P/59.94", "1080P/50", "1080P/30", "720P/60", "720P/59.94"]} onChange={(value) => onChange("videoOutRes", value)} style={fieldSelectStyle} />
-          </FormField>
         </div>
       </ConfigCard>
     </div>
@@ -1920,19 +1893,25 @@ export default function App() {
 
   // Video & Audio 設置狀態
   const [videoSettings, setVideoSettings] = useState({
-    videoMode: "USB + Streaming",
+    powerFreq: "60Hz",
+    priorityMode: "2K60",
+    pipPbpMode: "PIP(PTZ/Wide) Small",
+    videoOutRes: "1080p/60",
+    hdmiOutputFormat: "YUV444",
+    themeMode: "IP",
     streamRes: "1920x1080",
-    streamBitrate: "8Mbps",
+    streamBitrate: "Auto",
     streamEncode: "H.264",
-    streamFps: "30",
+    streamFps: "60",
     streamI_Vop: 1,
+    streamGop: 30,
+    streamCompat: "Off",
     streamRateCtrl: "VBR",
-    audioInputType: "MIC In",
+    audioInputType: "Line In",
     audioVolume: 5,
-    uac: "On",
+    usbAudioEnable: "Disable",
     audioEncode: "AAC",
-    audioSampleRate: "48K",
-    videoOutRes: "1080P/60"
+    audioSampleRate: "48K"
   });
 
   const updVideo = useCallback((k, v) => {
@@ -3532,6 +3511,32 @@ export default function App() {
     <div id="aver-paint-look-root" style={{ position: "relative", background: T.page, width: "100%", height: "100vh", fontFamily: fUI, color: T.text, display: "flex", overflow: "hidden" }}>
       {/* 注入控制滑桿樣式與色環旋轉動畫 */}
       <style>{`
+        .tr322-scroll-shell::-webkit-scrollbar { display: none; }
+        #aver-video-audio-wrapper .tr322-card > div:first-child {
+          padding: 6px 14px !important;
+          font-size: 13px !important;
+        }
+        #aver-video-audio-wrapper .tr322-card > div:nth-child(2) {
+          padding: 7px 10px !important;
+        }
+        #aver-video-audio-wrapper .aver-form-field {
+          min-height: 56px !important;
+        }
+        #aver-video-audio-wrapper .aver-form-field-header {
+          padding: 2px 10px !important;
+          font-size: 12.5px !important;
+        }
+        #aver-video-audio-wrapper .aver-form-field-content {
+          padding: 3px 10px !important;
+        }
+        #aver-video-audio-wrapper .aver-vertical-radio {
+          min-width: 62px !important;
+          gap: 3px !important;
+        }
+        #aver-video-audio-wrapper .aver-vertical-radio > span:last-child {
+          font-size: 12.5px !important;
+        }
+
         /* 縮放 125% 與低高度螢幕適配滾動 */
         @media (max-height: 860px) {
           #aver-main-stage {
@@ -3569,7 +3574,9 @@ export default function App() {
         /* Keep Live View usable on narrower laptop screens without changing the
            desktop 1 : 1 : 2 preset layout. */
         @media (max-width: 1120px) {
-          .tr322-settings-grid {
+          .tr322-video-grid,
+          .tr322-stream-grid,
+          .tr322-audio-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
           }
           #aver-live-control-panel {
@@ -3688,8 +3695,9 @@ export default function App() {
             padding-right: 0 !important;
             overflow: visible !important;
           }
-          .tr322-mode-grid,
-          .tr322-settings-grid {
+          .tr322-video-grid,
+          .tr322-stream-grid,
+          .tr322-audio-grid {
             grid-template-columns: 1fr !important;
           }
 
@@ -4103,9 +4111,10 @@ export default function App() {
           ["Camera Settings", "camera", false], 
           ["Video & Audio", "video", true], 
           ["Network", "network", false], 
-          ["Advanced Settings", "advanced", false], 
+          ["Tracking Settings", "tracking", false],
           ["NDI", "ndi", false], 
-          ["System", "system", false]
+          ["System", "system", false],
+          ["Audio Integrated", "audio_int", false]
         ].map(([lb, id, implement]) => {
           const active = activeMenu === id;
           return (
