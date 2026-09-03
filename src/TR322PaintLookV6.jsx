@@ -1,7 +1,7 @@
 /* ============================================================================
- * AVer TR615 — Camera & Paint/Look WEB UI 原型  (V6)
+ * AVer TR322 — Camera & Paint/Look WEB UI 原型  (V6)
  * ----------------------------------------------------------------------------
- * 用途:Pro AV PTZ 攝影機 TR615 之 WEB UI「Paint/Look」色彩調校介面原型。
+ * 用途:Pro AV PTZ 攝影機 TR322 之 WEB UI「Paint/Look」色彩調校介面原型。
  *       此為 UX/UI 設計原型 (React 單檔),非最終工程交付。色彩運算為前端 JS 模擬,
  *       實機由韌體 DSP 處理;原型的示波器/畫面僅供互動展示。
  *
@@ -876,7 +876,8 @@ function VerticalRadio({ label, checked, onChange, disabled }) {
       <input 
         type="radio" 
         checked={checked} 
-        onChange={disabled ? undefined : onChange} 
+        disabled={disabled}
+        onChange={disabled ? () => {} : onChange} 
         style={{ display: "none" }} 
       />
       {/* 圓圈 */}
@@ -1012,6 +1013,131 @@ function BodySlider({ val, min, max, onChange }) {
         }} 
       />
       <span style={{ fontSize: 13, color: T.faint, width: 14, fontFamily: fMono }}>{max}</span>
+    </div>
+  );
+}
+
+function TR322VideoAudioPage({ settings, onChange }) {
+  const fieldSelectStyle = {
+    width: "100%",
+    maxWidth: "none",
+    background: "#202328",
+    border: `1.5px solid ${T.line2}`,
+    borderRadius: 4,
+    padding: "6px 12px"
+  };
+  const streamDisabled = settings.videoMode === "USB Only";
+  const encodingDisabled = settings.videoMode === "USB + Streaming" || streamDisabled;
+  const modes = [
+    { id: "Stream Only", label: "Stream Only" },
+    { id: "USB Only", label: "USB Only" },
+    { id: "USB + Streaming", label: "USB + Streaming" },
+    { id: "NDI", label: "NDI", disabled: true }
+  ];
+
+  return (
+    <div id="aver-video-audio-wrapper" style={{ width: "min(1180px, 100%)", height: "100%", margin: "0 auto", overflowY: "auto", padding: "4px 8px 24px 0", boxSizing: "border-box" }}>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 20, marginBottom: 20 }}>
+        <div>
+          <div style={{ color: T.blue, fontSize: 11, fontWeight: 700, letterSpacing: 1.4, textTransform: "uppercase" }}>TR322 configuration</div>
+          <h1 style={{ margin: "6px 0 0", color: T.text, fontSize: 25, lineHeight: 1.2, fontWeight: 650 }}>Video &amp; Audio</h1>
+          <p style={{ margin: "7px 0 0", color: T.dim, fontSize: 13, lineHeight: 1.5 }}>Configure streaming, USB video output, and audio behavior.</p>
+        </div>
+        <div style={{ padding: "6px 10px", borderRadius: 999, border: `1px solid rgba(30,155,240,0.35)`, background: "rgba(30,155,240,0.08)", color: T.blue, fontSize: 11.5, fontWeight: 650, whiteSpace: "nowrap" }}>Video &amp; Audio prototype</div>
+      </div>
+
+      <ConfigCard title="Video Mode">
+        <div className="tr322-mode-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 }}>
+          {modes.map((mode) => {
+            const selected = settings.videoMode === mode.id;
+            return (
+              <button
+                key={mode.id}
+                id={`tr322-video-mode-${mode.id.toLowerCase().replaceAll(" ", "-").replace("+", "plus")}`}
+                type="button"
+                disabled={mode.disabled}
+                aria-pressed={selected}
+                onClick={() => onChange("videoMode", mode.id)}
+                style={{ minHeight: 76, padding: "12px 10px", borderRadius: 7, border: `1px solid ${selected ? T.blue : T.line2}`, background: selected ? "rgba(30,155,240,0.13)" : "#111317", color: selected ? "#fff" : mode.disabled ? T.faint : T.dim, fontFamily: fUI, fontSize: 13, fontWeight: selected ? 650 : 500, cursor: mode.disabled ? "not-allowed" : "pointer", opacity: mode.disabled ? 0.42 : 1, boxShadow: selected ? "inset 0 0 0 1px rgba(30,155,240,0.22), 0 8px 24px rgba(0,0,0,0.16)" : "none", transition: "border-color .18s ease, background .18s ease, color .18s ease, transform .18s ease" }}
+              >
+                <span aria-hidden="true" style={{ width: 16, height: 16, margin: "0 auto 9px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", border: `2px solid ${selected ? "#fff" : T.faint}`, boxSizing: "border-box" }}>
+                  {selected && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff" }} />}
+                </span>
+                {mode.label}
+              </button>
+            );
+          })}
+        </div>
+      </ConfigCard>
+
+      <ConfigCard title="Stream Video Output">
+        <div className="tr322-settings-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+          <FormField label="Stream Video Output">
+            <Select val={settings.streamRes} options={["1920x1080", "1280x720", "640x360"]} disabled={streamDisabled} onChange={(value) => onChange("streamRes", value)} style={fieldSelectStyle} />
+          </FormField>
+          <FormField label="Bitrate">
+            <Select val={settings.streamBitrate} options={["1Mbps", "2Mbps", "4Mbps", "6Mbps", "8Mbps", "12Mbps", "16Mbps"]} disabled={streamDisabled} onChange={(value) => onChange("streamBitrate", value)} style={fieldSelectStyle} />
+          </FormField>
+          <FormField label="Encoding Type">
+            <div style={{ display: "flex", gap: 24, padding: "4px 0" }}>
+              <VerticalRadio label="H.264" disabled={encodingDisabled} checked={settings.streamEncode === "H.264"} onChange={() => onChange("streamEncode", "H.264")} />
+              <VerticalRadio label="MJPEG" disabled={encodingDisabled} checked={settings.streamEncode === "MJPEG"} onChange={() => onChange("streamEncode", "MJPEG")} />
+            </div>
+          </FormField>
+          <FormField label="Framerate">
+            <Select val={settings.streamFps} options={["60", "59.94", "50", "30", "25"]} disabled={streamDisabled} onChange={(value) => onChange("streamFps", value)} style={fieldSelectStyle} />
+          </FormField>
+          <FormField label="I-VOP Interval (S)" rightLabel={`${settings.streamI_Vop}s`}>
+            <div style={{ width: "100%", opacity: streamDisabled ? 0.45 : 1, pointerEvents: streamDisabled ? "none" : "auto" }}>
+              <BodySlider val={settings.streamI_Vop} min={1} max={10} onChange={(value) => onChange("streamI_Vop", value)} />
+            </div>
+          </FormField>
+          <FormField label="Rate Control">
+            <div style={{ display: "flex", gap: 24, padding: "4px 0" }}>
+              <VerticalRadio label="VBR" disabled={streamDisabled} checked={settings.streamRateCtrl === "VBR"} onChange={() => onChange("streamRateCtrl", "VBR")} />
+              <VerticalRadio label="CBR" disabled={streamDisabled} checked={settings.streamRateCtrl === "CBR"} onChange={() => onChange("streamRateCtrl", "CBR")} />
+            </div>
+          </FormField>
+        </div>
+      </ConfigCard>
+
+      <ConfigCard title="Audio">
+        <div className="tr322-settings-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+          <FormField label="Audio Input Type">
+            <div style={{ display: "flex", gap: 24, padding: "4px 0" }}>
+              <VerticalRadio label="Line In" checked={settings.audioInputType === "Line In"} onChange={() => onChange("audioInputType", "Line In")} />
+              <VerticalRadio label="MIC In" checked={settings.audioInputType === "MIC In"} onChange={() => onChange("audioInputType", "MIC In")} />
+            </div>
+          </FormField>
+          <FormField label="Audio Volume" rightLabel={settings.audioVolume}>
+            <BodySlider val={settings.audioVolume} min={0} max={10} onChange={(value) => onChange("audioVolume", value)} />
+          </FormField>
+          <FormField label="UAC">
+            <div style={{ display: "flex", gap: 24, padding: "4px 0" }}>
+              <VerticalRadio label="On" checked={settings.uac === "On"} onChange={() => onChange("uac", "On")} />
+              <VerticalRadio label="Off" checked={settings.uac === "Off"} onChange={() => onChange("uac", "Off")} />
+            </div>
+          </FormField>
+          <FormField label="Encoding Type">
+            <div style={{ display: "flex", gap: 24, padding: "4px 0" }}>
+              <VerticalRadio label="AAC" checked={settings.audioEncode === "AAC"} onChange={() => onChange("audioEncode", "AAC")} />
+              <VerticalRadio label="G.711" checked={settings.audioEncode === "G.711"} onChange={() => onChange("audioEncode", "G.711")} />
+            </div>
+          </FormField>
+          <FormField label="Sampling Rate">
+            <Select val={settings.audioSampleRate} options={["48K"]} onChange={(value) => onChange("audioSampleRate", value)} style={fieldSelectStyle} />
+          </FormField>
+          <div aria-hidden="true" />
+        </div>
+      </ConfigCard>
+
+      <ConfigCard title="Video Output">
+        <div style={{ maxWidth: 360 }}>
+          <FormField label="Video Output">
+            <Select val={settings.videoOutRes} options={["1080P/60", "1080P/59.94", "1080P/50", "1080P/30", "720P/60", "720P/59.94"]} onChange={(value) => onChange("videoOutRes", value)} style={fieldSelectStyle} />
+          </FormField>
+        </div>
+      </ConfigCard>
     </div>
   );
 }
@@ -1564,8 +1690,8 @@ export default function App() {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [deletingScene, setDeletingScene] = useState(null);
 
-  // 選單頁面狀態："paint" (Paint / Look), "video" (Video & Audio)
-  const [activeMenu, setActiveMenu] = useState("tracking");
+  // TR322 本次原型只開放 Video & Audio，其餘選單保留作為產品資訊架構提示。
+  const [activeMenu, setActiveMenu] = useState("video");
   const [versionMenuOpen, setVersionMenuOpen] = useState(false);
   const [gridDebug, setGridDebug] = useState("off"); // Grid 模式："off" | "viewport-24" | "container-24" | "pixel-8"
   const [paintLayout, setPaintLayout] = useState("classic"); // "classic" 經典 | "cinema" 劇院
@@ -1794,22 +1920,19 @@ export default function App() {
 
   // Video & Audio 設置狀態
   const [videoSettings, setVideoSettings] = useState({
-    powerFreq: "59.94Hz",
-    videoOutRes: "1080μP/59",
-    themeMode: "Standard",
+    videoMode: "USB + Streaming",
     streamRes: "1920x1080",
-    streamBitrate: "Auto",
+    streamBitrate: "8Mbps",
     streamEncode: "H.264",
-    streamFps: "60",
-    streamI_Vop: 10,
-    streamGop: 30,
-    streamCompat: "Off",
+    streamFps: "30",
+    streamI_Vop: 1,
     streamRateCtrl: "VBR",
-    audioInputType: "Line In",
+    audioInputType: "MIC In",
     audioVolume: 5,
-    usbAudioEnable: "Enable",
+    uac: "On",
     audioEncode: "AAC",
-    audioSampleRate: "48K"
+    audioSampleRate: "48K",
+    videoOutRes: "1080P/60"
   });
 
   const updVideo = useCallback((k, v) => {
@@ -3446,6 +3569,9 @@ export default function App() {
         /* Keep Live View usable on narrower laptop screens without changing the
            desktop 1 : 1 : 2 preset layout. */
         @media (max-width: 1120px) {
+          .tr322-settings-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
           #aver-live-control-panel {
             flex-basis: 300px !important;
             height: 300px !important;
@@ -3561,6 +3687,10 @@ export default function App() {
             margin-left: 0 !important;
             padding-right: 0 !important;
             overflow: visible !important;
+          }
+          .tr322-mode-grid,
+          .tr322-settings-grid {
+            grid-template-columns: 1fr !important;
           }
 
           /* Live View and Preset */
@@ -3937,7 +4067,7 @@ export default function App() {
         .aver-gauge-pulse { animation: averGaugePulse 1.1s ease-out infinite; }
       `}</style>
 
-      <div
+      {false && <div
         id="aver-version-switcher"
         title="Switch prototype version"
         onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setVersionMenuOpen(false); }}
@@ -3963,21 +4093,19 @@ export default function App() {
             <button id="aver-version-option-v3" type="button" role="option" aria-selected="true" onClick={() => setVersionMenuOpen(false)} style={{ width: "100%", minHeight: 32, padding: "6px 9px", border: "none", borderRadius: 4, background: "rgba(30,155,240,0.16)", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 600, textAlign: "left", cursor: "pointer", boxShadow: `inset 2px 0 0 ${T.blue}` }}>V3 · 08/11</button>
           </div>
         )}
-      </div>
+      </div>}
 
       {/* 側邊導覽欄 (AVer WebUI Sidebar Template) */}
       <div id="aver-sidebar-container" style={{ width: 220, background: T.side, flexShrink: 0, paddingTop: 20, display: "flex", flexDirection: "column", height: "100vh", boxSizing: "border-box", overflowY: "auto" }}>
         <div style={{ padding: "4px 24px 20px", fontWeight: 700, fontSize: 22, fontStyle: "italic", letterSpacing: 0.5, color: "#fff" }}>AVer</div>
         {[
-          ["Live View", "live", true], 
-          ["Camera Settings", "camera", true], 
-          ["Paint / Look", "paint", true], 
+          ["Live View", "live", false], 
+          ["Camera Settings", "camera", false], 
           ["Video & Audio", "video", true], 
-          ["Network", "network", true], 
-          ["Tracking Settings", "tracking", true], 
-          ["NDI", "ndi", true], 
-          ["System", "system", true], 
-          ["Audio Integrated", "audio_int", false]
+          ["Network", "network", false], 
+          ["Advanced Settings", "advanced", false], 
+          ["NDI", "ndi", false], 
+          ["System", "system", false]
         ].map(([lb, id, implement]) => {
           const active = activeMenu === id;
           return (
@@ -3985,13 +4113,16 @@ export default function App() {
               key={lb} 
               id={`aver-side-menu-${id}`}
               className="aver-menu-item"
+              aria-disabled={!implement}
+              title={implement ? lb : `${lb} is not included in this prototype`}
               onClick={() => { if (implement) setActiveMenu(id); }}
               style={{ 
-                padding: "14px 24px", fontSize: 14, cursor: implement ? "pointer" : "default", 
+                padding: "14px 24px", fontSize: 14, cursor: implement ? "pointer" : "not-allowed", 
                 background: active ? T.sideActive : "transparent", 
-                color: active ? "#fff" : T.dim, 
+                color: active ? "#fff" : implement ? T.dim : T.faint, 
                 fontWeight: active ? 600 : 400, 
                 borderLeft: active ? "4px solid #fff" : "4px solid transparent", 
+                opacity: implement ? 1 : 0.48,
                 transition: "background .25s ease, color .25s ease, border-color .25s ease, font-weight .25s ease" 
               }}
             >
@@ -6089,6 +6220,9 @@ export default function App() {
             );
           })()
         ) : (
+          <>
+          <TR322VideoAudioPage settings={videoSettings} onChange={updVideo} />
+          {false && (
           <div id="aver-video-audio-wrapper" style={{ display: "flex", flexDirection: "column", gap: SP[3], width: "min(calc(75vw - 40px), 100%)", marginLeft: "max(0px, calc(16.6667vw - 225.33px))", height: "100%", overflowY: "auto", paddingRight: 8, boxSizing: "border-box" }}>
             
             {/* Video & Audio 設置區容器 */}
@@ -6263,6 +6397,8 @@ export default function App() {
               </ConfigCard>
             </div>
           </div>
+          )}
+          </>
         )}
 
         {/* Save as New Scene Modal 彈出視窗 */}
@@ -6766,7 +6902,7 @@ export default function App() {
         }} />
       )}
 
-      <button 
+      {false && <button 
         onClick={() => setGridDebug((prev) => {
           if (prev === "off") return "viewport-24";
           if (prev === "viewport-24") return "container-24";
@@ -6814,7 +6950,7 @@ export default function App() {
           gridDebug === "pixel-8" ? "P8" : 
           "#"
         }
-      </button>
+      </button>}
     </div>
   );
 }

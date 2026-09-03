@@ -1,13 +1,13 @@
-# TR615 UX 設計紀錄（截至 2026/07/25）
+# TR322 UX 設計紀錄（截至 2026/07/25）
 
 > 本文件簡要記錄 2026/07/25（含）以前已建立或確認的設計內容，作為後續版本比較基準。
 
 ## 1. 專案範圍
 
-- 以既有 TR615 React Web UI 為基礎持續開發，保留 Live View、Paint / Look、Camera Settings、Video & Audio、Network、Tracking Settings、NDI、System 等功能。
+- 以既有 TR322 React Web UI 為基礎持續開發，保留 Live View、Paint / Look、Camera Settings、Video & Audio、Network、Tracking Settings、NDI、System 等功能。
 - 人臉辨識功能主要整合於 `Tracking Settings > Face Enrollment`。
-- 整體維持 TR615 深色介面、藍色主要操作與既有側邊選單風格。
-- 原型主要程式仍集中於 `src/TR615PaintLookV6.jsx`，採漸進式調整，未全面重寫。
+- 整體維持 TR322 深色介面、藍色主要操作與既有側邊選單風格。
+- 原型主要程式仍集中於 `src/TR322PaintLookV6.jsx`，採漸進式調整，未全面重寫。
 
 ## 2. Face Enrollment 資訊架構
 
