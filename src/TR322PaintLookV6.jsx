@@ -837,7 +837,7 @@ function ConfigCard({ title, children, className, style, contentStyle }) {
       ...style
     }}>
       {/* 標題欄 */}
-      <div style={{
+      {title && <div className="aver-config-card-header" style={{
         background: "rgba(0, 0, 0, 0.22)",
         padding: "10px 16px",
         fontSize: 14,
@@ -847,9 +847,9 @@ function ConfigCard({ title, children, className, style, contentStyle }) {
         fontFamily: fUI
       }}>
         {title}
-      </div>
+      </div>}
       {/* 內容區 */}
-      <div style={{
+      <div className="aver-config-card-content" style={{
         padding: "16px 20px",
         fontFamily: fUI,
         ...contentStyle
@@ -1021,14 +1021,14 @@ function BodySlider({ val, min, max, onChange }) {
 
 function TR322VideoAudioPage({ settings, onChange }) {
   const selectStyle = { width: "100%", maxWidth: "none", background: "#202328", border: `1.5px solid ${T.line2}`, borderRadius: 4, padding: "5px 10px" };
-  const cardStyle = { marginBottom: 8 };
+  const cardStyle = { marginBottom: 6 };
   const cardContentStyle = { padding: "10px 12px" };
   const fieldStyle = { minHeight: 64 };
 
   return (
     <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ width: "min(1320px, 100%)", height: "100%", margin: "0 auto", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
-      <ConfigCard title="Video Output" className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
-        <div className="tr322-video-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
+      <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
+        <div className="tr322-primary-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="Power Frequency" style={fieldStyle}>
             <Select val={settings.powerFreq} options={["50Hz", "59.94Hz", "60Hz"]} onChange={(value) => onChange("powerFreq", value)} style={selectStyle} />
           </FormField>
@@ -1038,20 +1038,30 @@ function TR322VideoAudioPage({ settings, onChange }) {
           <FormField label="PIP/PBP Mode" style={fieldStyle}>
             <Select val={settings.pipPbpMode} options={["PIP(PTZ/Wide) Small"]} onChange={(value) => onChange("pipPbpMode", value)} style={selectStyle} />
           </FormField>
-          <FormField label="Video Output Resolution" style={fieldStyle}>
-            <Select val={settings.videoOutRes} options={["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={selectStyle} />
+        </div>
+      </ConfigCard>
+
+      <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
+        <div className="tr322-output-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
+          <FormField label="Video Output Resolution" style={{ ...fieldStyle, gridColumn: "span 2" }}>
+            <Select val={settings.videoOutRes} options={["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={{ ...selectStyle, maxWidth: 320 }} />
           </FormField>
           <FormField label="HDMI Output Format" style={fieldStyle}>
             <Select val={settings.hdmiOutputFormat} options={["YUV444"]} onChange={(value) => onChange("hdmiOutputFormat", value)} style={selectStyle} />
           </FormField>
-          <FormField label="Theme Mode" style={fieldStyle}>
-            <Select val={settings.themeMode} options={["IP"]} onChange={(value) => onChange("themeMode", value)} style={selectStyle} />
+        </div>
+      </ConfigCard>
+
+      <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
+        <div className="tr322-theme-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
+          <FormField label="Theme Mode" style={{ ...fieldStyle, gridColumn: "span 2" }}>
+            <Select val={settings.themeMode} options={["IP"]} onChange={(value) => onChange("themeMode", value)} style={{ ...selectStyle, maxWidth: 320 }} />
           </FormField>
         </div>
       </ConfigCard>
 
-      <ConfigCard title="Stream Video Output" className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
-        <div className="tr322-stream-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 8 }}>
+      <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
+        <div className="tr322-stream-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="Stream Video Output" style={fieldStyle}>
             <Select val={settings.streamRes} options={["1920x1080", "1280x720", "640x360"]} onChange={(value) => onChange("streamRes", value)} style={selectStyle} />
           </FormField>
@@ -1088,7 +1098,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
         </div>
       </ConfigCard>
 
-      <ConfigCard title="Audio" className="tr322-card" style={{ ...cardStyle, marginBottom: 0 }} contentStyle={cardContentStyle}>
+      <ConfigCard className="tr322-card" style={{ ...cardStyle, marginBottom: 0 }} contentStyle={cardContentStyle}>
         <div className="tr322-audio-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="Audio Input Type" style={fieldStyle}>
             <div style={{ display: "flex", gap: 12, padding: "1px 0" }}>
@@ -3512,12 +3522,12 @@ export default function App() {
       {/* 注入控制滑桿樣式與色環旋轉動畫 */}
       <style>{`
         .tr322-scroll-shell::-webkit-scrollbar { display: none; }
-        #aver-video-audio-wrapper .tr322-card > div:first-child {
+        #aver-video-audio-wrapper .tr322-card > .aver-config-card-header {
           padding: 8px 14px !important;
           font-size: 13px !important;
         }
-        #aver-video-audio-wrapper .tr322-card > div:nth-child(2) {
-          padding: 9px 10px !important;
+        #aver-video-audio-wrapper .tr322-card > .aver-config-card-content {
+          padding: 5px 10px !important;
         }
         #aver-video-audio-wrapper .aver-form-field {
           min-height: 64px !important;
@@ -3574,7 +3584,9 @@ export default function App() {
         /* Keep Live View usable on narrower laptop screens without changing the
            desktop 1 : 1 : 2 preset layout. */
         @media (max-width: 1120px) {
-          .tr322-video-grid,
+          .tr322-primary-grid,
+          .tr322-output-grid,
+          .tr322-theme-grid,
           .tr322-stream-grid,
           .tr322-audio-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -3695,10 +3707,16 @@ export default function App() {
             padding-right: 0 !important;
             overflow: visible !important;
           }
-          .tr322-video-grid,
+          .tr322-primary-grid,
+          .tr322-output-grid,
+          .tr322-theme-grid,
           .tr322-stream-grid,
           .tr322-audio-grid {
             grid-template-columns: 1fr !important;
+          }
+          .tr322-output-grid > .aver-form-field,
+          .tr322-theme-grid > .aver-form-field {
+            grid-column: auto !important;
           }
 
           /* Live View and Preset */
