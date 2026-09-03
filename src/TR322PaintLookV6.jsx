@@ -3513,25 +3513,25 @@ export default function App() {
       <style>{`
         .tr322-scroll-shell::-webkit-scrollbar { display: none; }
         #aver-video-audio-wrapper .tr322-card > div:first-child {
-          padding: 6px 14px !important;
+          padding: 8px 14px !important;
           font-size: 13px !important;
         }
         #aver-video-audio-wrapper .tr322-card > div:nth-child(2) {
-          padding: 7px 10px !important;
+          padding: 9px 10px !important;
         }
         #aver-video-audio-wrapper .aver-form-field {
-          min-height: 56px !important;
+          min-height: 64px !important;
         }
         #aver-video-audio-wrapper .aver-form-field-header {
-          padding: 2px 10px !important;
+          padding: 3px 10px !important;
           font-size: 12.5px !important;
         }
         #aver-video-audio-wrapper .aver-form-field-content {
-          padding: 3px 10px !important;
+          padding: 5px 10px !important;
         }
         #aver-video-audio-wrapper .aver-vertical-radio {
           min-width: 62px !important;
-          gap: 3px !important;
+          gap: 4px !important;
         }
         #aver-video-audio-wrapper .aver-vertical-radio > span:last-child {
           font-size: 12.5px !important;
