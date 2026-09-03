@@ -1067,36 +1067,38 @@ function TR322VideoAudioPage({ settings, onChange }) {
       </ConfigCard>
 
       <ConfigCard className="tr322-card tr322-license-card" style={cardStyle} contentStyle={cardContentStyle}>
-        <form onSubmit={activateLicense} style={{ minHeight: 54, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18 }}>
-          <div style={{ minWidth: 230 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#fff", fontSize: 13.5, fontWeight: 650 }}>
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: licenseActive ? "#49c97a" : T.faint, boxShadow: licenseActive ? "0 0 8px rgba(73,201,122,.55)" : "none" }} />
-              High Resolution License
+        <form className="tr322-license-grid" onSubmit={activateLicense} style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
+          <FormField label="License Status" style={fieldStyle}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+              <span style={{ flex: "0 0 auto", width: 8, height: 8, borderRadius: "50%", background: licenseActive ? "#49c97a" : T.faint, boxShadow: licenseActive ? "0 0 8px rgba(73,201,122,.55)" : "none" }} />
+              <span style={{ color: licenseActive ? "#72d99a" : T.dim, fontSize: 12.5, fontWeight: 600 }}>
+                {licenseActive ? "Activated · 4K output enabled" : "Not Activated"}
+              </span>
             </div>
-            <div style={{ marginTop: 4, color: licenseActive ? "#72d99a" : T.faint, fontSize: 11.5 }}>
-              {licenseActive ? "Activated · 4K output enabled" : "Unlock 2160p/30 video and 3840x2160 streaming"}
-            </div>
-          </div>
-          {licenseActive ? (
-            <>
-              <div style={{ flex: 1, minWidth: 180, maxWidth: 430, padding: "8px 11px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.dim, fontFamily: fMono, fontSize: 12.5 }}>
+          </FormField>
+          <FormField label="High Resolution License Key" style={fieldStyle}>
+            {licenseActive ? (
+              <div style={{ width: "100%", padding: "6px 10px", boxSizing: "border-box", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.dim, fontFamily: fMono, fontSize: 12.5 }}>
                 {maskedLicenseKey}
               </div>
-              <button type="button" onClick={() => setUnbindOpen(true)} style={{ minWidth: 128, padding: "8px 14px", border: "1px solid #a94b50", borderRadius: 4, background: "rgba(169,75,80,.12)", color: "#ef9a9e", fontFamily: fUI, fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>
+            ) : (
+              <div style={{ width: "100%" }}>
+                <input aria-label="License Key" value={licenseKey} onChange={(event) => { setLicenseKey(event.target.value); setLicenseError(""); }} placeholder="Enter license key" autoComplete="off" style={{ width: "100%", boxSizing: "border-box", padding: "6px 10px", border: `1.5px solid ${licenseError ? "#d76066" : T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fMono, fontSize: 12.5 }} />
+                {licenseError && <div role="alert" style={{ marginTop: 2, color: "#ef8388", fontSize: 10 }}>{licenseError}</div>}
+              </div>
+            )}
+          </FormField>
+          <FormField label="License Action" style={fieldStyle}>
+            {licenseActive ? (
+              <button type="button" onClick={() => setUnbindOpen(true)} style={{ width: "100%", padding: "7px 14px", border: "1px solid #a94b50", borderRadius: 4, background: "rgba(169,75,80,.12)", color: "#ef9a9e", fontFamily: fUI, fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>
                 Unbind License
               </button>
-            </>
-          ) : (
-            <>
-              <div style={{ flex: 1, minWidth: 180, maxWidth: 430 }}>
-                <input aria-label="License Key" value={licenseKey} onChange={(event) => { setLicenseKey(event.target.value); setLicenseError(""); }} placeholder="Enter license key" autoComplete="off" style={{ width: "100%", boxSizing: "border-box", padding: "8px 11px", border: `1.5px solid ${licenseError ? "#d76066" : T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fMono, fontSize: 12.5 }} />
-                {licenseError && <div role="alert" style={{ marginTop: 3, color: "#ef8388", fontSize: 10.5 }}>{licenseError}</div>}
-              </div>
-              <button type="submit" style={{ minWidth: 128, padding: "8px 14px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontSize: 12.5, fontWeight: 650, cursor: "pointer" }}>
+            ) : (
+              <button type="submit" style={{ width: "100%", padding: "7px 14px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontSize: 12.5, fontWeight: 650, cursor: "pointer" }}>
                 Activate
               </button>
-            </>
-          )}
+            )}
+          </FormField>
         </form>
       </ConfigCard>
 
@@ -3626,18 +3628,6 @@ export default function App() {
         #aver-video-audio-wrapper .aver-vertical-radio > span:last-child {
           font-size: 12.5px !important;
         }
-        @media (max-width: 768px) {
-          #aver-video-audio-wrapper .tr322-license-card form {
-            align-items: stretch !important;
-            flex-direction: column !important;
-          }
-          #aver-video-audio-wrapper .tr322-license-card form > * {
-            width: 100% !important;
-            max-width: none !important;
-            box-sizing: border-box !important;
-          }
-        }
-
         /* 縮放 125% 與低高度螢幕適配滾動 */
         @media (max-height: 860px) {
           #aver-main-stage {
@@ -3678,6 +3668,7 @@ export default function App() {
           .tr322-primary-grid,
           .tr322-output-grid,
           .tr322-theme-grid,
+          .tr322-license-grid,
           .tr322-stream-grid,
           .tr322-audio-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -3801,6 +3792,7 @@ export default function App() {
           .tr322-primary-grid,
           .tr322-output-grid,
           .tr322-theme-grid,
+          .tr322-license-grid,
           .tr322-stream-grid,
           .tr322-audio-grid {
             grid-template-columns: 1fr !important;
