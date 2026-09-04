@@ -1024,6 +1024,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
   const [activeLicenseKey, setActiveLicenseKey] = useState("");
   const [licenseActive, setLicenseActive] = useState(false);
   const [licenseError, setLicenseError] = useState("");
+  const [activateOpen, setActivateOpen] = useState(false);
   const [unbindOpen, setUnbindOpen] = useState(false);
   const selectStyle = { width: "100%", maxWidth: "none", background: "#202328", border: `1.5px solid ${T.line2}`, borderRadius: 4, padding: "5px 10px" };
   const cardStyle = { marginBottom: 6 };
@@ -1039,6 +1040,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
     setActiveLicenseKey(normalizedKey);
     setLicenseActive(true);
     setLicenseError("");
+    setActivateOpen(false);
   };
   const unbindLicense = () => {
     setLicenseActive(false);
@@ -1067,7 +1069,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
       </ConfigCard>
 
       <ConfigCard className="tr322-card tr322-license-card" style={cardStyle} contentStyle={cardContentStyle}>
-        <form className="tr322-license-grid" onSubmit={activateLicense} style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
+        <div className="tr322-license-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="High Resolution License" style={fieldStyle}>
             {licenseActive ? (
               <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
@@ -1081,18 +1083,14 @@ function TR322VideoAudioPage({ settings, onChange }) {
                 </button>
               </div>
             ) : (
-              <div style={{ width: "100%" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <input aria-label="License Key" value={licenseKey} onChange={(event) => { setLicenseKey(event.target.value); setLicenseError(""); }} placeholder="Enter license key" autoComplete="off" style={{ flex: 1, minWidth: 0, boxSizing: "border-box", padding: "6px 9px", border: `1.5px solid ${licenseError ? "#d76066" : T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fMono, fontSize: 11.5 }} />
-                  <button type="submit" style={{ flex: "0 0 auto", padding: "6px 11px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
-                    Activate
-                  </button>
-                </div>
-                {licenseError && <div role="alert" style={{ marginTop: 2, color: "#ef8388", fontSize: 10 }}>{licenseError}</div>}
+              <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                <button type="button" onClick={() => { setLicenseError(""); setActivateOpen(true); }} style={{ width: "min(230px, 100%)", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
+                  High Resolution Activate Function
+                </button>
               </div>
             )}
           </FormField>
-        </form>
+        </div>
       </ConfigCard>
 
       <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
@@ -1175,6 +1173,22 @@ function TR322VideoAudioPage({ settings, onChange }) {
           <div aria-hidden="true" />
         </div>
       </ConfigCard>
+
+      {activateOpen && (
+        <div role="dialog" aria-modal="true" aria-labelledby="activate-license-title" style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.68)", backdropFilter: "blur(3px)" }}>
+          <form onSubmit={activateLicense} style={{ position: "relative", width: "min(480px, 100%)", padding: "22px", border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, boxShadow: "0 22px 60px rgba(0,0,0,.55)" }}>
+            <button type="button" aria-label="Close" onClick={() => setActivateOpen(false)} style={{ position: "absolute", top: 10, right: 10, width: 28, height: 28, padding: 0, border: "none", background: "transparent", color: T.faint, fontFamily: fUI, fontSize: 22, lineHeight: 1, cursor: "pointer" }}>×</button>
+            <div id="activate-license-title" style={{ paddingRight: 28, color: "#fff", fontSize: 16, fontWeight: 700 }}>Enter a key code to activate High Resolution Output</div>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginTop: 18 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <input autoFocus aria-label="License Key" value={licenseKey} onChange={(event) => { setLicenseKey(event.target.value); setLicenseError(""); }} placeholder="Enter your license key here" autoComplete="off" style={{ width: "100%", height: 34, boxSizing: "border-box", padding: "6px 10px", border: `1.5px solid ${licenseError ? "#d76066" : T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fMono, fontSize: 12.5 }} />
+                {licenseError && <div role="alert" style={{ marginTop: 4, color: "#ef8388", fontSize: 10.5 }}>{licenseError}</div>}
+              </div>
+              <button type="submit" style={{ flex: "0 0 auto", minWidth: 100, height: 34, padding: "0 14px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontSize: 12, fontWeight: 650, cursor: "pointer" }}>Activate</button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {unbindOpen && (
         <div role="dialog" aria-modal="true" aria-labelledby="unbind-license-title" style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.68)", backdropFilter: "blur(3px)" }}>
