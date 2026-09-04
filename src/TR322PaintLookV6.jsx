@@ -1026,7 +1026,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
   const [invalidKeyOpen, setInvalidKeyOpen] = useState(false);
   const [rebootAction, setRebootAction] = useState(null);
   const [rebooting, setRebooting] = useState(false);
-  const demoLicenseKey = "TR322-4K-DEMO";
+  const demoLicenseKey = "123456789";
   const selectStyle = { width: "100%", maxWidth: "none", background: "#202328", border: `1.5px solid ${T.line2}`, borderRadius: 4, padding: "5px 10px" };
   const cardStyle = { marginBottom: 6 };
   const cardContentStyle = { padding: "10px 12px" };
