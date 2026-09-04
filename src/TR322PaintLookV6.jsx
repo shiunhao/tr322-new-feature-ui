@@ -1092,9 +1092,8 @@ function TR322VideoAudioPage({ settings, onChange }) {
   );
   const integratedOutputLicenseField = (
     <div className="aver-form-field tr322-output-license-field" style={{ ...fieldStyle, gridColumn: "span 2", border: `1.5px solid ${T.line}`, borderRadius: 4, overflow: "hidden", background: "#08090a", boxSizing: "border-box", width: "100%" }}>
-      <div className="aver-form-field-header tr322-output-license-header" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", background: "#22252a", color: T.dim, fontFamily: fUI, fontWeight: 600, borderBottom: `1.5px solid ${T.line}` }}>
+      <div className="aver-form-field-header tr322-output-license-header" style={{ background: "#22252a", color: T.dim, fontFamily: fUI, fontWeight: 600, borderBottom: `1.5px solid ${T.line}` }}>
         <span>Video Output Resolution</span>
-        <span style={{ borderLeft: `1px solid ${T.line}`, paddingLeft: 10 }}>High Resolution License</span>
       </div>
       <div className="aver-form-field-content tr322-output-license-content" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", alignItems: "center", gap: 8, background: "#08090a", boxSizing: "border-box" }}>
         <Select val={settings.videoOutRes} options={licenseActive ? ["2160p/30", "1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"] : ["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={selectStyle} />
@@ -1106,8 +1105,8 @@ function TR322VideoAudioPage({ settings, onChange }) {
   );
 
   return (
-    <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ width: "100%", height: "100%", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
-      <div className="tr322-layout-toolbar" style={{ width: "100%", maxWidth: 1300, minHeight: 32, margin: "0 auto 6px", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
+    <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ position: "relative", width: "100%", height: "100%", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
+      <div className="tr322-layout-toolbar" style={{ position: "absolute", top: 7, right: 14, zIndex: 30, minHeight: 30, padding: "3px 4px 3px 8px", display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.line}`, borderRadius: 5, background: "rgba(24,27,31,.96)", boxShadow: "0 4px 12px rgba(0,0,0,.35)" }}>
         <label htmlFor="tr322-layout-version" style={{ color: T.faint, fontSize: 11.5, fontWeight: 600 }}>Layout Version</label>
         <select id="tr322-layout-version" value={layoutVersion} onChange={(event) => changeLayoutVersion(event.target.value)} style={{ width: 210, height: 30, padding: "4px 9px", border: `1px solid ${T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fUI, fontSize: 11.5, cursor: "pointer" }}>
           <option value="v1">V1 · Separate License</option>
