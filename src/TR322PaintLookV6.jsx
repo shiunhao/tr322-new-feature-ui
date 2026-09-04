@@ -1069,9 +1069,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
     nextUrl.searchParams.set("layout", version);
     window.history.replaceState({}, "", nextUrl);
   };
-  const licenseField = (
-    <FormField label="High Resolution License" style={fieldStyle}>
-      {licenseActive ? (
+  const licenseControl = licenseActive ? (
         <div style={{ width: "100%", display: "flex", alignItems: "center", gap: 8 }}>
           <div aria-label={`License key ending in ${licenseKey.slice(-4)}`} style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: "6px 9px", boxSizing: "border-box", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.dim, fontFamily: fMono, fontSize: 11.5, letterSpacing: 3, textAlign: "left", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {maskedLicenseKey}
@@ -1086,8 +1084,25 @@ function TR322VideoAudioPage({ settings, onChange }) {
             High Resolution Activate Function
           </button>
         </div>
-      )}
+      );
+  const licenseField = (
+    <FormField label="High Resolution License" style={fieldStyle}>
+      {licenseControl}
     </FormField>
+  );
+  const integratedOutputLicenseField = (
+    <div className="aver-form-field tr322-output-license-field" style={{ ...fieldStyle, gridColumn: "span 2", border: `1.5px solid ${T.line}`, borderRadius: 4, overflow: "hidden", background: "#08090a", boxSizing: "border-box", width: "100%" }}>
+      <div className="aver-form-field-header tr322-output-license-header" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", background: "#22252a", color: T.dim, fontFamily: fUI, fontWeight: 600, borderBottom: `1.5px solid ${T.line}` }}>
+        <span>Video Output Resolution</span>
+        <span style={{ borderLeft: `1px solid ${T.line}`, paddingLeft: 10 }}>High Resolution License</span>
+      </div>
+      <div className="aver-form-field-content tr322-output-license-content" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", alignItems: "center", gap: 8, background: "#08090a", boxSizing: "border-box" }}>
+        <Select val={settings.videoOutRes} options={licenseActive ? ["2160p/30", "1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"] : ["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={selectStyle} />
+        <div style={{ minWidth: 0, paddingLeft: 8, borderLeft: `1px solid ${T.line}` }}>
+          {licenseControl}
+        </div>
+      </div>
+    </div>
   );
 
   return (
@@ -1124,10 +1139,11 @@ function TR322VideoAudioPage({ settings, onChange }) {
 
       <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
         <div className="tr322-output-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
-          <FormField label="Video Output Resolution" style={fieldStyle}>
-            <Select val={settings.videoOutRes} options={licenseActive ? ["2160p/30", "1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"] : ["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={selectStyle} />
-          </FormField>
-          {layoutVersion === "v2" && licenseField}
+          {layoutVersion === "v2" ? integratedOutputLicenseField : (
+            <FormField label="Video Output Resolution" style={fieldStyle}>
+              <Select val={settings.videoOutRes} options={licenseActive ? ["2160p/30", "1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"] : ["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={selectStyle} />
+            </FormField>
+          )}
           <FormField label="HDMI Output Format" style={fieldStyle}>
             <Select val={settings.hdmiOutputFormat} options={["YUV444"]} onChange={(value) => onChange("hdmiOutputFormat", value)} style={selectStyle} />
           </FormField>
