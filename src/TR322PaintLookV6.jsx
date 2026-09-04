@@ -1021,11 +1021,12 @@ function BodySlider({ val, min, max, onChange }) {
 
 function TR322VideoAudioPage({ settings, onChange }) {
   const [licenseKey, setLicenseKey] = useState("");
-  const [activeLicenseKey, setActiveLicenseKey] = useState("");
   const [licenseActive, setLicenseActive] = useState(false);
-  const [licenseError, setLicenseError] = useState("");
   const [activateOpen, setActivateOpen] = useState(false);
-  const [unbindOpen, setUnbindOpen] = useState(false);
+  const [invalidKeyOpen, setInvalidKeyOpen] = useState(false);
+  const [rebootAction, setRebootAction] = useState(null);
+  const [rebooting, setRebooting] = useState(false);
+  const demoLicenseKey = "TR322-4K-DEMO";
   const selectStyle = { width: "100%", maxWidth: "none", background: "#202328", border: `1.5px solid ${T.line2}`, borderRadius: 4, padding: "5px 10px" };
   const cardStyle = { marginBottom: 6 };
   const cardContentStyle = { padding: "10px 12px" };
@@ -1033,24 +1034,30 @@ function TR322VideoAudioPage({ settings, onChange }) {
   const activateLicense = (event) => {
     event.preventDefault();
     const normalizedKey = licenseKey.trim();
-    if (normalizedKey.length < 8) {
-      setLicenseError("Enter a valid license key.");
+    if (normalizedKey !== demoLicenseKey) {
+      setActivateOpen(false);
+      setInvalidKeyOpen(true);
       return;
     }
-    setActiveLicenseKey(normalizedKey);
-    setLicenseActive(true);
-    setLicenseError("");
     setActivateOpen(false);
+    setRebootAction("activate");
   };
-  const unbindLicense = () => {
-    setLicenseActive(false);
-    setLicenseKey("");
-    setActiveLicenseKey("");
-    setUnbindOpen(false);
-    onChange("videoOutRes", "1080p/60");
-    onChange("streamRes", "1920x1080");
+  const confirmReboot = () => {
+    const action = rebootAction;
+    setRebootAction(null);
+    setRebooting(true);
+    window.setTimeout(() => {
+      if (action === "activate") {
+        setLicenseActive(true);
+      } else {
+        setLicenseActive(false);
+        setLicenseKey("");
+        onChange("videoOutRes", "1080p/60");
+        onChange("streamRes", "1920x1080");
+      }
+      setRebooting(false);
+    }, 1400);
   };
-  const maskedLicenseKey = activeLicenseKey ? `••••-••••-${activeLicenseKey.slice(-4).toUpperCase()}` : "";
 
   return (
     <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ width: "100%", height: "100%", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
@@ -1072,19 +1079,14 @@ function TR322VideoAudioPage({ settings, onChange }) {
         <div className="tr322-license-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="High Resolution License" style={fieldStyle}>
             {licenseActive ? (
-              <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
-                  <span style={{ flex: "0 0 auto", width: 8, height: 8, borderRadius: "50%", background: "#49c97a", boxShadow: "0 0 8px rgba(73,201,122,.55)" }} />
-                  <span style={{ color: "#72d99a", fontSize: 12.5, fontWeight: 650 }}>Registered</span>
-                  <span style={{ overflow: "hidden", color: T.faint, fontFamily: fMono, fontSize: 10.5, textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{maskedLicenseKey}</span>
-                </div>
-                <button type="button" onClick={() => setUnbindOpen(true)} style={{ flex: "0 0 auto", padding: "6px 10px", border: "1px solid #a94b50", borderRadius: 4, background: "rgba(169,75,80,.12)", color: "#ef9a9e", fontFamily: fUI, fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
+              <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                <button type="button" onClick={() => setRebootAction("deactivate")} style={{ width: "min(230px, 100%)", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
                   Deactivate
                 </button>
               </div>
             ) : (
               <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                <button type="button" onClick={() => { setLicenseError(""); setActivateOpen(true); }} style={{ width: "min(230px, 100%)", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
+                <button type="button" onClick={() => setActivateOpen(true)} style={{ width: "min(230px, 100%)", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
                   High Resolution Activate Function
                 </button>
               </div>
@@ -1181,8 +1183,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
             <div id="activate-license-title" style={{ paddingRight: 28, color: "#fff", fontSize: 16, fontWeight: 700 }}>Enter a key code to activate High Resolution Output</div>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginTop: 18 }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <input autoFocus aria-label="License Key" value={licenseKey} onChange={(event) => { setLicenseKey(event.target.value); setLicenseError(""); }} placeholder="Enter your license key here" autoComplete="off" style={{ width: "100%", height: 34, boxSizing: "border-box", padding: "6px 10px", border: `1.5px solid ${licenseError ? "#d76066" : T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fMono, fontSize: 12.5 }} />
-                {licenseError && <div role="alert" style={{ marginTop: 4, color: "#ef8388", fontSize: 10.5 }}>{licenseError}</div>}
+                <input autoFocus aria-label="License Key" value={licenseKey} onChange={(event) => setLicenseKey(event.target.value)} placeholder="Enter your license key here" autoComplete="off" style={{ width: "100%", height: 34, boxSizing: "border-box", padding: "6px 10px", border: `1.5px solid ${T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fMono, fontSize: 12.5 }} />
               </div>
               <button type="submit" style={{ flex: "0 0 auto", minWidth: 100, height: 34, padding: "0 14px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontSize: 12, fontWeight: 650, cursor: "pointer" }}>Activate</button>
             </div>
@@ -1190,18 +1191,34 @@ function TR322VideoAudioPage({ settings, onChange }) {
         </div>
       )}
 
-      {unbindOpen && (
-        <div role="dialog" aria-modal="true" aria-labelledby="unbind-license-title" style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.68)", backdropFilter: "blur(3px)" }}>
-          <div style={{ width: "min(430px, 100%)", padding: 22, border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, boxShadow: "0 22px 60px rgba(0,0,0,.55)" }}>
-            <div id="unbind-license-title" style={{ color: "#fff", fontSize: 17, fontWeight: 700 }}>Deactivate high resolution license?</div>
-            <div style={{ marginTop: 10, color: T.dim, fontSize: 13, lineHeight: 1.55 }}>
-              4K output will be disabled. Video output will return to 1080p/60 and stream output to 1920x1080. The license can then be activated on another device.
-            </div>
+      {invalidKeyOpen && (
+        <div role="alertdialog" aria-modal="true" aria-labelledby="invalid-license-title" style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.68)", backdropFilter: "blur(3px)" }}>
+          <div style={{ width: "min(410px, 100%)", padding: 22, border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, boxShadow: "0 22px 60px rgba(0,0,0,.55)" }}>
+            <div id="invalid-license-title" style={{ color: "#fff", fontSize: 16, fontWeight: 700 }}>Incorrect License Key</div>
+            <div style={{ marginTop: 10, color: T.dim, fontSize: 13 }}>The license key you entered is incorrect.</div>
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
-              <button type="button" onClick={() => setUnbindOpen(false)} style={{ padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.text, fontFamily: fUI, cursor: "pointer" }}>Cancel</button>
-              <button type="button" onClick={unbindLicense} style={{ padding: "8px 16px", border: "1px solid #b55156", borderRadius: 4, background: "#a44348", color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>Deactivate</button>
+              <button type="button" onClick={() => { setInvalidKeyOpen(false); setActivateOpen(true); }} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>OK</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {rebootAction && (
+        <div role="alertdialog" aria-modal="true" aria-labelledby="reboot-license-title" style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.68)", backdropFilter: "blur(3px)" }}>
+          <div style={{ width: "min(450px, 100%)", padding: 22, border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, boxShadow: "0 22px 60px rgba(0,0,0,.55)" }}>
+            <div id="reboot-license-title" style={{ color: "#fff", fontSize: 16, fontWeight: 700 }}>Camera restart required</div>
+            <div style={{ marginTop: 10, color: T.dim, fontSize: 13, lineHeight: 1.55 }}>The camera will reboot. Do you want to continue?</div>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+              <button type="button" onClick={() => setRebootAction(null)} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.text, fontFamily: fUI, cursor: "pointer" }}>Cancel</button>
+              <button type="button" onClick={confirmReboot} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>OK</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {rebooting && (
+        <div role="status" aria-live="polite" style={{ position: "fixed", inset: 0, zIndex: 1100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,.82)", backdropFilter: "blur(4px)" }}>
+          <div style={{ minWidth: 260, padding: "24px 30px", border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, color: "#fff", fontSize: 15, fontWeight: 650, textAlign: "center", boxShadow: "0 22px 60px rgba(0,0,0,.6)" }}>Camera is rebooting…</div>
         </div>
       )}
     </div>
