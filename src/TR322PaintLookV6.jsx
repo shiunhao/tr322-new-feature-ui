@@ -1097,8 +1097,8 @@ function TR322VideoAudioPage({ settings, onChange }) {
 
       <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
         <div className="tr322-output-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
-          <FormField label="Video Output Resolution" style={{ ...fieldStyle, gridColumn: "span 2" }}>
-            <Select val={settings.videoOutRes} options={licenseActive ? ["2160p/30", "1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"] : ["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={{ ...selectStyle, maxWidth: 320 }} />
+          <FormField label="Video Output Resolution" style={fieldStyle}>
+            <Select val={settings.videoOutRes} options={licenseActive ? ["2160p/30", "1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"] : ["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={selectStyle} />
           </FormField>
           <FormField label="HDMI Output Format" style={fieldStyle}>
             <Select val={settings.hdmiOutputFormat} options={["YUV444"]} onChange={(value) => onChange("hdmiOutputFormat", value)} style={selectStyle} />
@@ -1108,8 +1108,8 @@ function TR322VideoAudioPage({ settings, onChange }) {
 
       <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
         <div className="tr322-theme-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
-          <FormField label="Theme Mode" style={{ ...fieldStyle, gridColumn: "span 2" }}>
-            <Select val={settings.themeMode} options={["IP"]} onChange={(value) => onChange("themeMode", value)} style={{ ...selectStyle, maxWidth: 320 }} />
+          <FormField label="Theme Mode" style={fieldStyle}>
+            <Select val={settings.themeMode} options={["IP"]} onChange={(value) => onChange("themeMode", value)} style={selectStyle} />
           </FormField>
         </div>
       </ConfigCard>
@@ -3598,7 +3598,8 @@ export default function App() {
         #aver-video-audio-wrapper .tr322-card > .aver-config-card-content {
           padding: 5px 10px !important;
         }
-        #aver-video-audio-wrapper .tr322-card > .aver-config-card-content > div {
+        #aver-video-audio-wrapper .tr322-card > .aver-config-card-content > div,
+        #aver-video-audio-wrapper .tr322-card > .aver-config-card-content > form {
           width: 100%;
           max-width: 1300px;
           margin-left: auto;
