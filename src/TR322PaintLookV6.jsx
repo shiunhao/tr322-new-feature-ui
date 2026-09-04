@@ -1081,7 +1081,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
           <FormField label="High Resolution License" style={fieldStyle}>
             {licenseActive ? (
               <div style={{ width: "100%", display: "flex", alignItems: "center", gap: 8 }}>
-                <div aria-label={`License key ending in ${licenseKey.slice(-4)}`} style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: "6px 9px", boxSizing: "border-box", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.dim, fontFamily: fMono, fontSize: 11.5, textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <div aria-label={`License key ending in ${licenseKey.slice(-4)}`} style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: "6px 9px", boxSizing: "border-box", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.dim, fontFamily: fMono, fontSize: 11.5, letterSpacing: 3, textAlign: "center", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {maskedLicenseKey}
                 </div>
                 <button type="button" onClick={() => setRebootAction("deactivate")} style={{ flex: "0 0 auto", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
