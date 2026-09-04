@@ -1027,6 +1027,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
   const [rebootAction, setRebootAction] = useState(null);
   const [rebooting, setRebooting] = useState(false);
   const demoLicenseKey = "123456789";
+  const maskedLicenseKey = licenseKey ? `${"•".repeat(Math.max(0, licenseKey.length - 4))}${licenseKey.slice(-4)}` : "";
   const selectStyle = { width: "100%", maxWidth: "none", background: "#202328", border: `1.5px solid ${T.line2}`, borderRadius: 4, padding: "5px 10px" };
   const cardStyle = { marginBottom: 6 };
   const cardContentStyle = { padding: "10px 12px" };
@@ -1079,8 +1080,11 @@ function TR322VideoAudioPage({ settings, onChange }) {
         <div className="tr322-license-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="High Resolution License" style={fieldStyle}>
             {licenseActive ? (
-              <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                <button type="button" onClick={() => setRebootAction("deactivate")} style={{ width: "min(230px, 100%)", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
+              <div style={{ width: "100%", display: "flex", alignItems: "center", gap: 8 }}>
+                <div aria-label={`License key ending in ${licenseKey.slice(-4)}`} style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: "6px 9px", boxSizing: "border-box", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.dim, fontFamily: fMono, fontSize: 11.5, textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {maskedLicenseKey}
+                </div>
+                <button type="button" onClick={() => setRebootAction("deactivate")} style={{ flex: "0 0 auto", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
                   Deactivate
                 </button>
               </div>
