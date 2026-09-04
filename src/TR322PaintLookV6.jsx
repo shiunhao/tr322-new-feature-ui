@@ -1020,6 +1020,10 @@ function BodySlider({ val, min, max, onChange }) {
 }
 
 function TR322VideoAudioPage({ settings, onChange }) {
+  const [layoutVersion, setLayoutVersion] = useState(() => {
+    const requestedLayout = new URLSearchParams(window.location.search).get("layout");
+    return requestedLayout === "v1" ? "v1" : "v2";
+  });
   const [licenseKey, setLicenseKey] = useState("");
   const [licenseActive, setLicenseActive] = useState(false);
   const [activateOpen, setActivateOpen] = useState(false);
@@ -1059,9 +1063,43 @@ function TR322VideoAudioPage({ settings, onChange }) {
       setRebooting(false);
     }, 1400);
   };
+  const changeLayoutVersion = (version) => {
+    setLayoutVersion(version);
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set("layout", version);
+    window.history.replaceState({}, "", nextUrl);
+  };
+  const licenseField = (
+    <FormField label="High Resolution License" style={fieldStyle}>
+      {licenseActive ? (
+        <div style={{ width: "100%", display: "flex", alignItems: "center", gap: 8 }}>
+          <div aria-label={`License key ending in ${licenseKey.slice(-4)}`} style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: "6px 9px", boxSizing: "border-box", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.dim, fontFamily: fMono, fontSize: 11.5, letterSpacing: 3, textAlign: "left", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {maskedLicenseKey}
+          </div>
+          <button type="button" onClick={() => setRebootAction("deactivate")} style={{ flex: "0 0 auto", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
+            Deactivate
+          </button>
+        </div>
+      ) : (
+        <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+          <button type="button" onClick={() => setActivateOpen(true)} style={{ width: "min(230px, 100%)", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
+            High Resolution Activate Function
+          </button>
+        </div>
+      )}
+    </FormField>
+  );
 
   return (
     <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ width: "100%", height: "100%", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
+      <div className="tr322-layout-toolbar" style={{ width: "100%", maxWidth: 1300, minHeight: 32, margin: "0 auto 6px", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
+        <label htmlFor="tr322-layout-version" style={{ color: T.faint, fontSize: 11.5, fontWeight: 600 }}>Layout Version</label>
+        <select id="tr322-layout-version" value={layoutVersion} onChange={(event) => changeLayoutVersion(event.target.value)} style={{ width: 210, height: 30, padding: "4px 9px", border: `1px solid ${T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fUI, fontSize: 11.5, cursor: "pointer" }}>
+          <option value="v1">V1 · Separate License</option>
+          <option value="v2">V2 · Integrated License</option>
+        </select>
+      </div>
+
       <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
         <div className="tr322-primary-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="Power Frequency" style={fieldStyle}>
@@ -1076,34 +1114,20 @@ function TR322VideoAudioPage({ settings, onChange }) {
         </div>
       </ConfigCard>
 
-      <ConfigCard className="tr322-card tr322-license-card" style={cardStyle} contentStyle={cardContentStyle}>
-        <div className="tr322-license-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
-          <FormField label="High Resolution License" style={fieldStyle}>
-            {licenseActive ? (
-              <div style={{ width: "100%", display: "flex", alignItems: "center", gap: 8 }}>
-                <div aria-label={`License key ending in ${licenseKey.slice(-4)}`} style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: "6px 9px", boxSizing: "border-box", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.dim, fontFamily: fMono, fontSize: 11.5, letterSpacing: 3, textAlign: "left", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {maskedLicenseKey}
-                </div>
-                <button type="button" onClick={() => setRebootAction("deactivate")} style={{ flex: "0 0 auto", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
-                  Deactivate
-                </button>
-              </div>
-            ) : (
-              <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                <button type="button" onClick={() => setActivateOpen(true)} style={{ width: "min(230px, 100%)", padding: "7px 12px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 11.5, fontWeight: 650, cursor: "pointer" }}>
-                  High Resolution Activate Function
-                </button>
-              </div>
-            )}
-          </FormField>
-        </div>
-      </ConfigCard>
+      {layoutVersion === "v1" && (
+        <ConfigCard className="tr322-card tr322-license-card" style={cardStyle} contentStyle={cardContentStyle}>
+          <div className="tr322-license-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
+            {licenseField}
+          </div>
+        </ConfigCard>
+      )}
 
       <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
         <div className="tr322-output-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
           <FormField label="Video Output Resolution" style={fieldStyle}>
             <Select val={settings.videoOutRes} options={licenseActive ? ["2160p/30", "1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"] : ["1080p/60", "1080p/59.94", "1080p/50", "1080p/30", "720p/60"]} onChange={(value) => onChange("videoOutRes", value)} style={selectStyle} />
           </FormField>
+          {layoutVersion === "v2" && licenseField}
           <FormField label="HDMI Output Format" style={fieldStyle}>
             <Select val={settings.hdmiOutputFormat} options={["YUV444"]} onChange={(value) => onChange("hdmiOutputFormat", value)} style={selectStyle} />
           </FormField>
