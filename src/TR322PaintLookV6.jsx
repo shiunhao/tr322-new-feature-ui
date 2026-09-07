@@ -1057,6 +1057,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
       } else {
         setLicenseActive(false);
         setLicenseKey("");
+        onChange("priorityMode", "2K60");
         onChange("videoOutRes", "1080p/60");
         onChange("streamRes", "1920x1080");
       }
@@ -1119,7 +1120,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
             <Select val={settings.powerFreq} options={["50Hz", "59.94Hz", "60Hz"]} onChange={(value) => onChange("powerFreq", value)} style={selectStyle} />
           </FormField>
           <FormField label="Priority Mode" style={fieldStyle}>
-            <Select val={settings.priorityMode} options={["2K60"]} onChange={(value) => onChange("priorityMode", value)} style={selectStyle} />
+            <Select val={settings.priorityMode} options={licenseActive ? ["2K60", "4K30"] : ["2K60"]} onChange={(value) => onChange("priorityMode", value)} style={selectStyle} />
           </FormField>
           <FormField label="PIP/PBP Mode" style={fieldStyle}>
             <Select val={settings.pipPbpMode} options={["PIP(PTZ/Wide) Small"]} onChange={(value) => onChange("pipPbpMode", value)} style={selectStyle} />
