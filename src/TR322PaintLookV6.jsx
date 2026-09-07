@@ -1030,6 +1030,10 @@ function TR322VideoAudioPage({ settings, onChange }) {
   const [invalidKeyOpen, setInvalidKeyOpen] = useState(false);
   const [rebootAction, setRebootAction] = useState(null);
   const [rebooting, setRebooting] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [loginUsername, setLoginUsername] = useState("1");
+  const [loginPassword, setLoginPassword] = useState("1");
+  const [loginError, setLoginError] = useState("");
   const demoLicenseKey = "123456789";
   const maskedLicenseKey = licenseKey ? `${"•".repeat(Math.max(0, licenseKey.length - 4))}-${licenseKey.slice(-4)}` : "";
   const selectStyle = { width: "100%", maxWidth: "none", background: "#202328", border: `1.5px solid ${T.line2}`, borderRadius: 4, padding: "5px 10px" };
@@ -1062,7 +1066,20 @@ function TR322VideoAudioPage({ settings, onChange }) {
         onChange("streamRes", "1920x1080");
       }
       setRebooting(false);
+      setLoginUsername("1");
+      setLoginPassword("1");
+      setLoginError("");
+      setLoginOpen(true);
     }, 1400);
+  };
+  const submitLogin = (event) => {
+    event.preventDefault();
+    if (loginUsername === "1" && loginPassword === "1") {
+      setLoginError("");
+      setLoginOpen(false);
+      return;
+    }
+    setLoginError("Incorrect username or password.");
   };
   const changeLayoutVersion = (version) => {
     setLayoutVersion(version);
@@ -1107,12 +1124,12 @@ function TR322VideoAudioPage({ settings, onChange }) {
 
   return (
     <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ width: "100%", height: "100%", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
-      <div className="tr322-layout-toolbar" style={{ position: "fixed", top: 12, right: 14, zIndex: 2147483647, minHeight: 30, padding: 3, display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.line}`, borderRadius: 5, background: "rgba(24,27,31,.96)", boxShadow: "0 4px 12px rgba(0,0,0,.35)" }}>
+      {!activateOpen && !invalidKeyOpen && !rebootAction && !rebooting && !loginOpen && <div className="tr322-layout-toolbar" style={{ position: "fixed", top: 12, right: 14, zIndex: 2147483647, minHeight: 30, padding: 3, display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.line}`, borderRadius: 5, background: "rgba(24,27,31,.96)", boxShadow: "0 4px 12px rgba(0,0,0,.35)" }}>
         <select id="tr322-layout-version" value={layoutVersion} onChange={(event) => changeLayoutVersion(event.target.value)} style={{ width: 210, height: 30, padding: "4px 9px", border: `1px solid ${T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fUI, fontSize: 11.5, cursor: "pointer" }}>
           <option value="v1">V1 · Separate License</option>
           <option value="v2">V2 · Integrated License</option>
         </select>
-      </div>
+      </div>}
 
       <ConfigCard className="tr322-card" style={cardStyle} contentStyle={cardContentStyle}>
         <div className="tr322-primary-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
@@ -1262,6 +1279,29 @@ function TR322VideoAudioPage({ settings, onChange }) {
       {rebooting && (
         <div role="status" aria-live="polite" style={{ position: "fixed", inset: 0, zIndex: 1100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,.82)", backdropFilter: "blur(4px)" }}>
           <div style={{ minWidth: 260, padding: "24px 30px", border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, color: "#fff", fontSize: 15, fontWeight: 650, textAlign: "center", boxShadow: "0 22px 60px rgba(0,0,0,.6)" }}>Camera is rebooting…</div>
+        </div>
+      )}
+
+      {loginOpen && (
+        <div role="dialog" aria-modal="true" aria-labelledby="relogin-title" style={{ position: "fixed", inset: 0, zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.72)", backdropFilter: "blur(4px)" }}>
+          <form onSubmit={submitLogin} style={{ width: "min(380px, 100%)", padding: 22, border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, boxShadow: "0 22px 60px rgba(0,0,0,.58)" }}>
+            <div id="relogin-title" style={{ color: "#fff", fontSize: 17, fontWeight: 700 }}>Sign In</div>
+            <div style={{ marginTop: 8, color: T.text, fontSize: 13, fontWeight: 600 }}>TR322 Camera</div>
+            <div style={{ marginTop: 4, color: T.dim, fontSize: 12.5 }}>Sign in again after the camera restart.</div>
+            <label style={{ display: "grid", gridTemplateColumns: "92px minmax(0, 1fr)", alignItems: "center", gap: 10, marginTop: 18, color: T.text, fontSize: 12.5 }}>
+              <span>Username</span>
+              <input autoFocus value={loginUsername} onChange={(event) => { setLoginUsername(event.target.value); setLoginError(""); }} autoComplete="username" style={{ width: "100%", height: 36, boxSizing: "border-box", padding: "7px 10px", border: `1px solid ${T.line2}`, borderRadius: 6, outline: "none", background: "#202328", color: T.text, fontFamily: fUI, fontSize: 13 }} />
+            </label>
+            <label style={{ display: "grid", gridTemplateColumns: "92px minmax(0, 1fr)", alignItems: "center", gap: 10, marginTop: 10, color: T.text, fontSize: 12.5 }}>
+              <span>Password</span>
+              <input type="password" value={loginPassword} onChange={(event) => { setLoginPassword(event.target.value); setLoginError(""); }} autoComplete="current-password" style={{ width: "100%", height: 36, boxSizing: "border-box", padding: "7px 10px", border: `1px solid ${T.line2}`, borderRadius: 6, outline: "none", background: "#202328", color: T.text, fontFamily: fUI, fontSize: 13 }} />
+            </label>
+            {loginError && <div role="alert" style={{ marginTop: 10, color: "#f0a2a2", fontSize: 12.5 }}>{loginError}</div>}
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+              <button type="button" onClick={() => { setLoginPassword(""); setLoginError("Sign-in is required to continue."); }} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.text, fontFamily: fUI, cursor: "pointer" }}>Cancel</button>
+              <button type="submit" style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>Sign In</button>
+            </div>
+          </form>
         </div>
       )}
     </div>
