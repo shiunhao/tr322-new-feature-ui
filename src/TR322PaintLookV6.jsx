@@ -1254,7 +1254,8 @@ function TR322VideoAudioPage({ settings, onChange }) {
       {invalidKeyOpen && (
         <div role="alertdialog" aria-modal="true" aria-labelledby="invalid-license-title" style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.68)", backdropFilter: "blur(3px)" }}>
           <div style={{ width: "min(410px, 100%)", padding: 22, border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, boxShadow: "0 22px 60px rgba(0,0,0,.55)" }}>
-            <div id="invalid-license-title" style={{ color: "#fff", fontSize: 16, fontWeight: 700 }}>License Key Error, can't activate 4K Output service.</div>
+            <div id="invalid-license-title" style={{ color: "#fff", fontSize: 16, fontWeight: 700 }}>License Key Error</div>
+            <div style={{ marginTop: 10, color: T.dim, fontSize: 13 }}>Can't activate 4K Output service.</div>
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
               <button type="button" onClick={() => { setInvalidKeyOpen(false); setActivateOpen(true); }} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>OK</button>
             </div>
