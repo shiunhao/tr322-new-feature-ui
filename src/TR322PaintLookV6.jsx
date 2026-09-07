@@ -1228,7 +1228,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <input autoFocus aria-label="4K License Key" value={licenseKey} onChange={(event) => setLicenseKey(event.target.value)} placeholder="Enter your 4K license key" autoComplete="off" style={{ width: "100%", height: 34, boxSizing: "border-box", padding: "6px 10px", border: `1.5px solid ${T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fMono, fontSize: 12.5 }} />
               </div>
-              <button type="submit" style={{ flex: "0 0 auto", minWidth: 100, height: 34, padding: "0 14px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontSize: 12, fontWeight: 650, cursor: "pointer" }}>Activate</button>
+              <button type="submit" style={{ flex: "0 0 auto", minWidth: 100, height: 34, padding: "0 14px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontSize: 12, fontWeight: 650, cursor: "pointer" }}>Activate</button>
             </div>
           </form>
         </div>
@@ -1240,7 +1240,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
             <div id="invalid-license-title" style={{ color: "#fff", fontSize: 16, fontWeight: 700 }}>Invalid 4K License Key</div>
             <div style={{ marginTop: 10, color: T.dim, fontSize: 13 }}>Invalid 4K license key. Please check and try again.</div>
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
-              <button type="button" onClick={() => { setInvalidKeyOpen(false); setActivateOpen(true); }} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>OK</button>
+              <button type="button" onClick={() => { setInvalidKeyOpen(false); setActivateOpen(true); }} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>OK</button>
             </div>
           </div>
         </div>
@@ -1253,7 +1253,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
             <div style={{ marginTop: 10, color: T.dim, fontSize: 13, lineHeight: 1.55 }}>The camera will reboot to {rebootAction === "activate" ? "activate" : "deactivate"} 4K Output. Do you want to continue?</div>
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
               <button type="button" onClick={() => setRebootAction(null)} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.text, fontFamily: fUI, cursor: "pointer" }}>Cancel</button>
-              <button type="button" onClick={confirmReboot} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.blue}`, borderRadius: 4, background: T.blue, color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>OK</button>
+              <button type="button" onClick={confirmReboot} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>OK</button>
             </div>
           </div>
         </div>
