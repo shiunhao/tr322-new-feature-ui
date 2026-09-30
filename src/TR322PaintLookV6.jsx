@@ -1030,6 +1030,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
   const [invalidKeyOpen, setInvalidKeyOpen] = useState(false);
   const [rebootAction, setRebootAction] = useState(null);
   const [rebooting, setRebooting] = useState(false);
+  const [rebootNoticeOpen, setRebootNoticeOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [loginUsername, setLoginUsername] = useState("1");
   const [loginPassword, setLoginPassword] = useState("1");
@@ -1048,10 +1049,10 @@ function TR322VideoAudioPage({ settings, onChange }) {
       return;
     }
     setActivateOpen(false);
-    setRebootAction("activate");
+    setRebootNoticeOpen(true);
+    startReboot("activate");
   };
-  const confirmReboot = () => {
-    const action = rebootAction;
+  const startReboot = (action) => {
     setRebootAction(null);
     setRebooting(true);
     window.setTimeout(() => {
@@ -1120,7 +1121,7 @@ function TR322VideoAudioPage({ settings, onChange }) {
 
   return (
     <div id="aver-video-audio-wrapper" className="tr322-scroll-shell" style={{ width: "100%", height: "100%", overflowY: "auto", padding: "2px 4px 8px 0", boxSizing: "border-box", scrollbarWidth: "none" }}>
-      {!activateOpen && !invalidKeyOpen && !rebootAction && !rebooting && !loginOpen && <div className="tr322-layout-toolbar" style={{ position: "fixed", top: 12, right: 14, zIndex: 2147483647, minHeight: 30, padding: 3, display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.line}`, borderRadius: 5, background: "rgba(24,27,31,.96)", boxShadow: "0 4px 12px rgba(0,0,0,.35)" }}>
+      {!activateOpen && !invalidKeyOpen && !rebootAction && !rebooting && !rebootNoticeOpen && !loginOpen && <div className="tr322-layout-toolbar" style={{ position: "fixed", top: 12, right: 14, zIndex: 2147483647, minHeight: 30, padding: 3, display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.line}`, borderRadius: 5, background: "rgba(24,27,31,.96)", boxShadow: "0 4px 12px rgba(0,0,0,.35)" }}>
         <select id="tr322-layout-version" value={layoutVersion} onChange={(event) => changeLayoutVersion(event.target.value)} style={{ width: 210, height: 30, padding: "4px 9px", border: `1px solid ${T.line2}`, borderRadius: 4, outline: "none", background: "#202328", color: T.text, fontFamily: fUI, fontSize: 11.5, cursor: "pointer" }}>
           <option value="v1">V1 · Separate License</option>
           <option value="v2">V2 · Integrated License</option>
@@ -1259,31 +1260,43 @@ function TR322VideoAudioPage({ settings, onChange }) {
         </div>
       )}
 
-      {rebootAction && (
-        <div role="alertdialog" aria-modal="true" aria-labelledby="reboot-license-title" style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.68)", backdropFilter: "blur(3px)" }}>
+      {rebootNoticeOpen && (
+        <div role="alertdialog" aria-modal="true" aria-labelledby="reboot-notice-title" style={{ position: "fixed", inset: 0, zIndex: 1100, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.68)", backdropFilter: "blur(3px)" }}>
           <div style={{ width: "min(450px, 100%)", padding: 22, border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, boxShadow: "0 22px 60px rgba(0,0,0,.55)" }}>
-            <div id="reboot-license-title" style={{ color: "#fff", fontSize: 16, fontWeight: 700 }}>Camera restart required</div>
-            <div style={{ marginTop: 10, color: T.dim, fontSize: 13, lineHeight: 1.55 }}>The camera will reboot. Do you want to continue?</div>
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
-              <button type="button" onClick={() => setRebootAction(null)} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.text, fontFamily: fUI, cursor: "pointer" }}>Cancel</button>
-              <button type="button" onClick={confirmReboot} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>OK</button>
+            <div id="reboot-notice-title" style={{ color: "#fff", fontSize: 16, fontWeight: 700 }}>Camera rebooting</div>
+            <div style={{ marginTop: 10, color: T.dim, fontSize: 13, lineHeight: 1.55 }}>The camera is rebooting to activate 4K Output.</div>
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}>
+              <button type="button" onClick={() => setRebootNoticeOpen(false)} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>OK</button>
             </div>
           </div>
         </div>
       )}
 
-      {rebooting && (
+      {rebootAction && (
+        <div role="alertdialog" aria-modal="true" aria-labelledby="reboot-license-title" style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.68)", backdropFilter: "blur(3px)" }}>
+          <div style={{ width: "min(450px, 100%)", padding: 22, border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, boxShadow: "0 22px 60px rgba(0,0,0,.55)" }}>
+            <div id="reboot-license-title" style={{ color: "#fff", fontSize: 16, fontWeight: 700 }}>Camera reboot required</div>
+            <div style={{ marginTop: 10, color: T.dim, fontSize: 13, lineHeight: 1.55 }}>The camera will reboot. Do you want to continue?</div>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+              <button type="button" onClick={() => setRebootAction(null)} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#202328", color: T.text, fontFamily: fUI, cursor: "pointer" }}>Cancel</button>
+              <button type="button" onClick={() => startReboot(rebootAction)} style={{ minWidth: 80, padding: "8px 16px", border: `1px solid ${T.line2}`, borderRadius: 4, background: "#30343a", color: "#fff", fontFamily: fUI, fontWeight: 650, cursor: "pointer" }}>OK</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {rebooting && !rebootNoticeOpen && (
         <div role="status" aria-live="polite" style={{ position: "fixed", inset: 0, zIndex: 1100, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,.82)", backdropFilter: "blur(4px)" }}>
           <div style={{ minWidth: 260, padding: "24px 30px", border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, color: "#fff", fontSize: 15, fontWeight: 650, textAlign: "center", boxShadow: "0 22px 60px rgba(0,0,0,.6)" }}>Camera is rebooting…</div>
         </div>
       )}
 
-      {loginOpen && (
+      {loginOpen && !rebootNoticeOpen && (
         <div role="dialog" aria-modal="true" aria-labelledby="relogin-title" style={{ position: "fixed", inset: 0, zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,.72)", backdropFilter: "blur(4px)" }}>
           <form onSubmit={submitLogin} style={{ width: "min(380px, 100%)", padding: 22, border: `1px solid ${T.line2}`, borderRadius: 10, background: T.panel, boxShadow: "0 22px 60px rgba(0,0,0,.58)" }}>
             <div id="relogin-title" style={{ color: "#fff", fontSize: 17, fontWeight: 700 }}>Sign In</div>
             <div style={{ marginTop: 8, color: T.text, fontSize: 13, fontWeight: 600 }}>TR322 Camera</div>
-            <div style={{ marginTop: 4, color: T.dim, fontSize: 12.5 }}>Sign in again after the camera restart.</div>
+            <div style={{ marginTop: 4, color: T.dim, fontSize: 12.5 }}>Sign in again after the camera reboot.</div>
             <label style={{ display: "grid", gridTemplateColumns: "92px minmax(0, 1fr)", alignItems: "center", gap: 10, marginTop: 18, color: T.text, fontSize: 12.5 }}>
               <span>Username</span>
               <input autoFocus value={loginUsername} onChange={(event) => { setLoginUsername(event.target.value); setLoginError(""); }} autoComplete="username" style={{ width: "100%", height: 36, boxSizing: "border-box", padding: "7px 10px", border: `1px solid ${T.line2}`, borderRadius: 6, outline: "none", background: "#202328", color: T.text, fontFamily: fUI, fontSize: 13 }} />
